@@ -1,3 +1,5 @@
+import { router } from '@kit.ArkUI';
+
 @Entry
 @Component
 struct WelcomePage {
@@ -5,14 +7,15 @@ struct WelcomePage {
   progress: number = 0;
 
   aboutToAppear() {
-    const timer = setInterval(() => {
-      if (this.progress >= 100) {
-        clearInterval(timer);
-        this.pageStack.pushPath({ name: "Index", param: "" });
-      } else {
-        this.progress += 5;
-      }
-    }, 100); // 模拟进度加载
+    setTimeout(() => {
+      router.pushUrl({ url: 'pages/Login' }, (err) => {
+        if (err) {
+          console.error('页面跳转失败', err);
+        } else {
+          console.info('页面跳转成功');
+        }
+      });
+    }, 2000);
   }
 
   build() {
@@ -20,7 +23,7 @@ struct WelcomePage {
       Column({ space: 30 }) {
         // LOGO 区域
         Column() {
-          Image($r('app.media.logo'))
+          Image($r("app.media.foreground"))
             .width('100')
             .height('100')
             .objectFit(ImageFit.Contain)
