@@ -8,7 +8,7 @@ struct WelcomePage {
 
   aboutToAppear() {
     setTimeout(() => {
-      router.pushUrl({ url: 'pages/Login' }, (err) => {
+      router.pushUrl({ url: 'pages/LoginPage' }, (err) => {
         if (err) {
           console.error('页面跳转失败', err);
         } else {
