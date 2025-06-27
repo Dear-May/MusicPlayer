@@ -1,5 +1,3 @@
-import { router } from "@kit.ArkUI"
-
 @Entry
 @Component
 struct LoginPage {
@@ -7,9 +5,18 @@ struct LoginPage {
   @State agree: boolean = false
   @State showExperiencePopup: boolean = false
   @State showProblemPopup: boolean = false
+  uiContext: UIContext | undefined = undefined;
 
-  closePopup() {
-    animateTo({
+  aboutToAppear() {
+    this.uiContext = this.getUIContext();
+    if (!this.uiContext) {
+      console.warn("no uiContext");
+      return;
+    }
+  }
+
+  ExperiencePopup() {
+    this.uiContext?.animateTo({
       duration: 300, // 动画持续时间(毫秒)
       curve: Curve.EaseOut, // 缓动曲线
       onFinish: () => {
@@ -18,6 +25,28 @@ struct LoginPage {
     }, () => {
       this.showExperiencePopup = !this.showExperiencePopup // 在动画函数中切换状态
     })
+  }
+
+  ProblemPopup() {
+    this.uiContext?.animateTo({
+      duration: 300, // 动画持续时间(毫秒)
+      curve: Curve.EaseOut, // 缓动曲线
+      onFinish: () => {
+        console.info('卡片动画完成') // 动画完成回调
+      }
+    }, () => {
+      this.showProblemPopup = !this.showProblemPopup // 在动画函数中切换状态
+    })
+  }
+
+  RouterToAccountRecovery() {
+    this.getUIContext().getRouter().pushUrl({ url: 'pages/AccountRecoveryPage' }, (err) => {
+      if (err) {
+        console.error('页面跳转失败', err);
+      } else {
+        console.info('页面跳转成功');
+      }
+    });
   }
 
   build() {
@@ -29,7 +58,7 @@ struct LoginPage {
             .fontSize(16)
             .fontColor('#888')
             .padding({ top: 10, right: 20 })
-            .onClick(() => this.closePopup())
+            .onClick(() => this.ExperiencePopup())
         }
         .alignItems(HorizontalAlign.End)
         .width('100%')
@@ -105,6 +134,7 @@ struct LoginPage {
             Text('登录遇到问题')
               .fontSize(14)
               .fontColor('#666')
+              .onClick(() => this.ProblemPopup())
             Text('|')
               .fontColor('#666')
             Text('其他登录方式 >')
@@ -123,13 +153,14 @@ struct LoginPage {
       .padding(5)
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM, SafeAreaEdge.TOP],)
 
+      // ”立即体验“弹窗
       if (this.showExperiencePopup) {
         Column() {
           // 点击空白区域关闭弹窗
           Blank()
             .width('100%')
             .height('100%')
-            .onClick(() => this.closePopup())
+            .onClick(() => this.ExperiencePopup())
 
           // 弹出内容
           Column() {
@@ -167,7 +198,7 @@ struct LoginPage {
                 .fontColor('#FF3B30')
                 .borderRadius(24)
                 .width('45%')
-                .onClick(() => this.closePopup())
+                .onClick(() => this.ExperiencePopup())
 
               Button('同意并继续')
                 .backgroundColor('#FF3B30')
@@ -175,7 +206,7 @@ struct LoginPage {
                 .borderRadius(24)
                 .width('45%')
                 .onClick(() => {
-                  router.pushUrl({ url: 'pages/Index' }, (err) => {
+                  this.getUIContext().getRouter().pushUrl({ url: 'pages/Index' }, (err) => {
                     if (err) {
                       console.error('页面跳转失败', err);
                     } else {
@@ -201,11 +232,77 @@ struct LoginPage {
         .height('100%')
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM, SafeAreaEdge.TOP],)
       }
+
+      // 问题弹窗
+      if (this.showProblemPopup) {
+        Column() {
+          // 点击空白区域关闭弹窗
+          Blank()
+            .width('100%')
+            .height('100%')
+            .onClick(() => this.ProblemPopup())
+
+          Column({ space: 14 }) {
+            // 标题
+            Text('登录遇到问题')
+              .fontSize(16)
+              .fontWeight(FontWeight.Bold)
+              .fontColor($r('sys.color.comp_background_list_card'))
+              .margin({ bottom: 10 })
+            // 分割线
+            Divider()
+              .backgroundColor('#ff3b3b3e')
+              .strokeWidth(2)
+            // 选项
+            Column({ space: 20 }) {
+              Text('手机号已更换')
+                .fontSize(18)
+                .fontColor('white')
+                .onClick(() => {
+                  this.RouterToAccountRecovery();
+                })
+              Text('找回原账号')
+                .fontSize(18)
+                .fontColor('white')
+                .onClick(() => {
+                  this.RouterToAccountRecovery();
+                })
+              Text('其他问题')
+                .fontSize(18)
+                .fontColor('white')
+                .onClick(() => {
+                  this.getUIContext().getRouter().pushUrl({ url: 'pages/CustomerServicePage' }, (err) => {
+                    if (err) {
+                      console.error('页面跳转失败', err);
+                    } else {
+                      console.info('页面跳转成功');
+                    }
+                  });
+                })
+            }
+            .alignItems(HorizontalAlign.Start)
+          }
+          .width('100%')
+          .backgroundColor('#1c1c1e')
+          .borderRadius({ topLeft: 20, topRight: 20 })
+          .position({ x: 0, y: '74%' })
+          .padding(30)
+          .alignItems(HorizontalAlign.Start)
+          .animation({
+            duration: 300,
+            curve: Curve.EaseOut
+          })
+        }
+        .backgroundColor('rgba(0, 0, 0, 0.5)')
+        .width('100%')
+        .height('100%')
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM, SafeAreaEdge.TOP],)
+      }
     }
   }
 }
 
 @Builder
 export function LoginBuilder(): void {
-  LoginPage()
+  LoginPage();
 }

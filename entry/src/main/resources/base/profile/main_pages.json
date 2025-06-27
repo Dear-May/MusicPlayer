@@ -3,6 +3,8 @@
     "pages/WelcomePage",
     "pages/LoginPage",
     "pages/Index",
+    "pages/AccountRecoveryPage",
+    "pages/CustomerServicePage",
     "pages/TestPage"
   ]
 }

@@ -1,14 +1,12 @@
-import { router } from '@kit.ArkUI';
-
 @Entry
 @Component
 struct WelcomePage {
   pageStack: NavPathStack = new NavPathStack();
   progress: number = 0;
 
-  aboutToAppear() {
+  async aboutToAppear() {
     setTimeout(() => {
-      router.pushUrl({ url: 'pages/LoginPage' }, (err) => {
+      this.getUIContext().getRouter().replaceUrl({ url: 'pages/LoginPage' }, (err) => {
         if (err) {
           console.error('页面跳转失败', err);
         } else {
