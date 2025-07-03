@@ -1,10 +1,11 @@
 @Entry
 @Component
 struct LoginPage {
-  @State phone: string = ''
-  @State agree: boolean = false
-  @State showExperiencePopup: boolean = false
-  @State showProblemPopup: boolean = false
+  @State phone: string = '';
+  @State agree: boolean = false;
+  @State showExperiencePopup: boolean = false;
+  @State showProblemPopup: boolean = false;
+  @State showOtherWaysLogin: boolean = false;
   uiContext: UIContext | undefined = undefined;
 
   aboutToAppear() {
@@ -36,6 +37,18 @@ struct LoginPage {
       }
     }, () => {
       this.showProblemPopup = !this.showProblemPopup // 在动画函数中切换状态
+    })
+  }
+
+  OtherWaysLogin() {
+    this.uiContext?.animateTo({
+      duration: 300, // 动画持续时间(毫秒)
+      curve: Curve.EaseOut, // 缓动曲线
+      onFinish: () => {
+        console.info('卡片动画完成') // 动画完成回调
+      }
+    }, () => {
+      this.showOtherWaysLogin = !this.showOtherWaysLogin // 在动画函数中切换状态
     })
   }
 
@@ -88,9 +101,14 @@ struct LoginPage {
               text: this.phone,
               // onChange: val => this.phone = val
             })
-              .fontColor('#666')
-              .fontSize(16)
+              .fontColor('#ccc')
+              .fontSize(18)
+              .fontWeight(FontWeight.Bold)
               .width('70%')
+              .maxLength(11)
+              .caretColor('#ccc')
+              .inputFilter("[0-9]")
+              .placeholderColor('#ff4f4f4f')
           }
           .padding(10)
           .backgroundColor('#2a2a2a')
@@ -125,6 +143,80 @@ struct LoginPage {
               })
           }
           .margin({ top: 10 })
+
+          //第三方登录
+          if (this.showOtherWaysLogin) {
+            Row({ space: 13 }) {
+              Column() {
+                Image($r("app.media.wechat"))
+                  .width(30)
+                  .height(30)
+                  .objectFit(ImageFit.Contain)
+              }
+              .alignItems(HorizontalAlign.Center)
+              .width(45)
+              .height(45)
+              .backgroundColor('#2f2e36')
+              .borderRadius(22.5)
+              .padding(9)
+              .onClick(() => {
+                console.log('点击了微信登录')
+              })
+
+              Column() {
+                Image($r("app.media.qq"))
+                  .width(30)
+                  .height(30)
+                  .objectFit(ImageFit.Contain)
+              }
+              .alignItems(HorizontalAlign.Center)
+              .width(45)
+              .height(45)
+              .backgroundColor('#2f2e36')
+              .borderRadius(22.5)
+              .padding(9)
+
+              Column() {
+                Image($r("app.media.weibo"))
+                  .width(30)
+                  .height(30)
+                  .objectFit(ImageFit.Contain)
+              }
+              .alignItems(HorizontalAlign.Center)
+              .width(45)
+              .height(45)
+              .backgroundColor('#2f2e36')
+              .borderRadius(22.5)
+              .padding(9)
+
+              Column() {
+                Image($r("app.media.neteasy"))
+                  .width(30)
+                  .height(30)
+                  .objectFit(ImageFit.Contain)
+              }
+              .alignItems(HorizontalAlign.Center)
+              .width(45)
+              .height(45)
+              .backgroundColor('#2f2e36')
+              .borderRadius(22.5)
+              .padding(9)
+
+              Column() {
+                Image($r("app.media.huawei"))
+                  .width(30)
+                  .height(30)
+                  .objectFit(ImageFit.Contain)
+              }
+              .alignItems(HorizontalAlign.Center)
+              .width(45)
+              .height(45)
+              .backgroundColor('#2f2e36')
+              .borderRadius(22.5)
+              .padding(9)
+            }
+            .margin(40)
+          }
         }
         .margin({ top: '30%' })
 
@@ -135,17 +227,20 @@ struct LoginPage {
               .fontSize(14)
               .fontColor('#666')
               .onClick(() => this.ProblemPopup())
-            Text('|')
-              .fontColor('#666')
-            Text('其他登录方式 >')
-              .fontSize(14)
-              .fontColor('#666')
+            if (!this.showOtherWaysLogin) {
+              Text('|')
+                .fontColor('#666')
+              Text('其他登录方式 >')
+                .fontSize(14)
+                .fontColor('#666')
+                .onClick(() => this.OtherWaysLogin())
+            }
           }
         }
         .width('100%')
         .alignItems(HorizontalAlign.Center)
         .justifyContent(FlexAlign.Center)
-        .position({ bottom: 10 })
+        .position({ bottom: 5 })
       }
       .backgroundColor('#1A0B1E')
       .width('100%')
