@@ -1,12 +1,25 @@
+import countries from '../../assets/country-code.json'
+
+interface CountryStruct {
+  cn: string;
+  en: string;
+  code: string;
+}
+
 @Entry
 @Component
 struct LoginPage {
+  uiContext: UIContext | undefined = undefined;
+  @State areaCode: string = '+86';
   @State phone: string = '';
   @State agree: boolean = false;
+  @State countryList: CountryStruct[] = countries;
+  @State selectCountryIndex: number = 0; //当前选中的国家索引
+  // 弹窗显示
   @State showExperiencePopup: boolean = false;
   @State showProblemPopup: boolean = false;
   @State showOtherWaysLogin: boolean = false;
-  uiContext: UIContext | undefined = undefined;
+  @State showCountryListPopup: boolean = false;
 
   aboutToAppear() {
     this.uiContext = this.getUIContext();
@@ -16,43 +29,32 @@ struct LoginPage {
     }
   }
 
-  ExperiencePopup() {
+  private togglePopupWithAnimation(popupName: string) {
     this.uiContext?.animateTo({
-      duration: 300, // 动画持续时间(毫秒)
-      curve: Curve.EaseOut, // 缓动曲线
+      duration: 300,
+      curve: Curve.EaseOut,
       onFinish: () => {
-        console.info('卡片动画完成') // 动画完成回调
+        console.info('卡片动画完成')
       }
     }, () => {
-      this.showExperiencePopup = !this.showExperiencePopup // 在动画函数中切换状态
+      switch (popupName) {
+        case 'experience':
+          this.showExperiencePopup = !this.showExperiencePopup;
+          break;
+        case 'problem':
+          this.showProblemPopup = !this.showProblemPopup;
+          break;
+        case 'otherWays':
+          this.showOtherWaysLogin = !this.showOtherWaysLogin;
+          break;
+        case 'countryList':
+          this.showCountryListPopup = !this.showCountryListPopup;
+          break;
+      }
     })
   }
 
-  ProblemPopup() {
-    this.uiContext?.animateTo({
-      duration: 300, // 动画持续时间(毫秒)
-      curve: Curve.EaseOut, // 缓动曲线
-      onFinish: () => {
-        console.info('卡片动画完成') // 动画完成回调
-      }
-    }, () => {
-      this.showProblemPopup = !this.showProblemPopup // 在动画函数中切换状态
-    })
-  }
-
-  OtherWaysLogin() {
-    this.uiContext?.animateTo({
-      duration: 300, // 动画持续时间(毫秒)
-      curve: Curve.EaseOut, // 缓动曲线
-      onFinish: () => {
-        console.info('卡片动画完成') // 动画完成回调
-      }
-    }, () => {
-      this.showOtherWaysLogin = !this.showOtherWaysLogin // 在动画函数中切换状态
-    })
-  }
-
-  RouterToAccountRecovery() {
+  private RouterToAccountRecovery() {
     this.getUIContext().getRouter().pushUrl({ url: 'pages/AccountRecoveryPage' }, (err) => {
       if (err) {
         console.error('页面跳转失败', err);
@@ -71,7 +73,7 @@ struct LoginPage {
             .fontSize(16)
             .fontColor('#888')
             .padding({ top: 10, right: 20 })
-            .onClick(() => this.ExperiencePopup())
+            .onClick(() => this.togglePopupWithAnimation('experience'))
         }
         .alignItems(HorizontalAlign.End)
         .width('100%')
@@ -92,23 +94,25 @@ struct LoginPage {
 
           // 手机输入框
           Row({ space: 10 }) {
-            Text('+86')
-              .fontSize(20)
+            Select([])
+              .value(this.areaCode)
               .fontColor('#ccc')
-              .fontWeight(FontWeight.Bold)
+              .selectedOptionFont({ weight: FontWeight.Bold, size: 30 })
+              .onClick(() => this.togglePopupWithAnimation('countryList'))
+
             TextInput({
               placeholder: '输入手机号',
               text: this.phone,
-              // onChange: val => this.phone = val
             })
               .fontColor('#ccc')
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
-              .width('70%')
+              .layoutWeight(1) // 使用剩余空间
               .maxLength(11)
               .caretColor('#ccc')
               .inputFilter("[0-9]")
               .placeholderColor('#ff4f4f4f')
+              .backgroundColor('#2a2a2a')
           }
           .padding(10)
           .backgroundColor('#2a2a2a')
@@ -226,14 +230,14 @@ struct LoginPage {
             Text('登录遇到问题')
               .fontSize(14)
               .fontColor('#666')
-              .onClick(() => this.ProblemPopup())
+              .onClick(() => this.togglePopupWithAnimation('problem'))
             if (!this.showOtherWaysLogin) {
               Text('|')
                 .fontColor('#666')
               Text('其他登录方式 >')
                 .fontSize(14)
                 .fontColor('#666')
-                .onClick(() => this.OtherWaysLogin())
+                .onClick(() => this.togglePopupWithAnimation('otherWays'))
             }
           }
         }
@@ -255,7 +259,7 @@ struct LoginPage {
           Blank()
             .width('100%')
             .height('100%')
-            .onClick(() => this.ExperiencePopup())
+            .onClick(() => this.togglePopupWithAnimation('experience'))
 
           // 弹出内容
           Column() {
@@ -293,7 +297,7 @@ struct LoginPage {
                 .fontColor('#FF3B30')
                 .borderRadius(24)
                 .width('45%')
-                .onClick(() => this.ExperiencePopup())
+                .onClick(() => this.togglePopupWithAnimation('experience'))
 
               Button('同意并继续')
                 .backgroundColor('#FF3B30')
@@ -335,7 +339,7 @@ struct LoginPage {
           Blank()
             .width('100%')
             .height('100%')
-            .onClick(() => this.ProblemPopup())
+            .onClick(() => this.togglePopupWithAnimation('problem'))
 
           Column({ space: 14 }) {
             // 标题
@@ -389,6 +393,75 @@ struct LoginPage {
           })
         }
         .backgroundColor('rgba(0, 0, 0, 0.5)')
+        .width('100%')
+        .height('100%')
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM, SafeAreaEdge.TOP],)
+      }
+
+      // 国家码选择框
+      if (this.showCountryListPopup) {
+        Column() {
+          // 点击空白区域关闭弹窗
+          Blank()
+            .width('100%')
+            .height('5%')
+            .onClick(() => this.togglePopupWithAnimation('countryList'))
+
+          Column() {
+            // 弹窗标题
+            Row({ space: 10 }) {
+              Button('×')
+                .fontSize(30)
+                .fontColor('#fff')
+                .backgroundColor('rgba(0,0,0,0)')// 透明
+                .margin({ top: 10, bottom: 10 })
+                .onClick(() => this.togglePopupWithAnimation('countryList'))
+              Text('选择国家和地区')
+                .fontSize(20)
+                .fontColor($r('sys.color.white'))
+                .fontWeight(FontWeight.Bold)
+                .margin({ top: 10, bottom: 10 })
+            }
+
+            // 国家和地区列表
+            Scroll() {
+              Column() {
+                ForEach(this.countryList, (item: CountryStruct, index) => {
+                  Row() {
+                    Text(item.cn)
+                      .fontSize(16)
+                      .fontColor('#fff')
+                      .margin({ left: 10 })
+                    Text(`${item.code}`)
+                      .fontSize(16)
+                      .fontColor('#888')
+                      .margin({ left: 10 })
+                  }
+                  .width('100%')
+                  .height(50)
+                  .backgroundColor('#1c1c1e')
+                  .onClick(() => {
+                    this.areaCode = `${item.code}`;
+                    this.selectCountryIndex = index;
+                    this.togglePopupWithAnimation('countryList');
+                  })
+                })
+              }
+              .width('100%')
+            }
+            .scrollable(ScrollDirection.Vertical)
+            .scrollBar(BarState.On)
+            .scrollBarColor('#888')
+            .scrollBarWidth(4)
+            .width('100%')
+            .height('100%')
+          }
+          .backgroundColor('#1c1c1e')
+          .borderRadius({ topLeft: 20, topRight: 20 })
+        }
+        .backgroundColor('rgba(0, 0, 0, 0.5)')
+        .alignItems(HorizontalAlign.Start)
+        .opacity(0.5)
         .width('100%')
         .height('100%')
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM, SafeAreaEdge.TOP],)
