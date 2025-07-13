@@ -97,7 +97,7 @@ struct LoginPage {
             Select([])
               .value(this.areaCode)
               .fontColor('#ccc')
-              .selectedOptionFont({ weight: FontWeight.Bold, size: 30 })
+              .selectedOptionFont({ weight: FontWeight.Bold, size: 20 })
               .onClick(() => this.togglePopupWithAnimation('countryList'))
 
             TextInput({
@@ -109,7 +109,7 @@ struct LoginPage {
               .fontWeight(FontWeight.Bold)
               .layoutWeight(1) // 使用剩余空间
               .maxLength(11)
-              .caretColor('#ccc')
+              .caretColor('#ec271b')
               .inputFilter("[0-9]")
               .placeholderColor('#ff4f4f4f')
               .backgroundColor('#2a2a2a')
@@ -409,37 +409,52 @@ struct LoginPage {
 
           Column() {
             // 弹窗标题
-            Row({ space: 10 }) {
-              Button('×')
-                .fontSize(30)
-                .fontColor('#fff')
-                .backgroundColor('rgba(0,0,0,0)')// 透明
-                .margin({ top: 10, bottom: 10 })
-                .onClick(() => this.togglePopupWithAnimation('countryList'))
-              Text('选择国家和地区')
-                .fontSize(20)
-                .fontColor($r('sys.color.white'))
-                .fontWeight(FontWeight.Bold)
-                .margin({ top: 10, bottom: 10 })
+            Column() {
+              Row({ space: 5 }) {
+                Button('×')
+                  .fontSize(30)
+                  .fontColor('#fff')
+                  .backgroundColor('rgba(0,0,0,0)')
+                  .margin({ top: 10, bottom: 10 })
+                  .onClick(() => this.togglePopupWithAnimation('countryList'))
+                Text('选择国家和地区')
+                  .fontSize(20)
+                  .fontColor($r('sys.color.white'))
+                  .fontWeight(FontWeight.Bold)
+                  .margin({ top: 10, bottom: 10 })
+              }
+              .backgroundColor('#1c1c1e')
+              .borderRadius({ topLeft: 20, topRight: 20 })
+              .width('100%')
+              .justifyContent(FlexAlign.Start)
             }
 
             // 国家和地区列表
             Scroll() {
               Column() {
                 ForEach(this.countryList, (item: CountryStruct, index) => {
-                  Row() {
-                    Text(item.cn)
-                      .fontSize(16)
-                      .fontColor('#fff')
-                      .margin({ left: 10 })
-                    Text(`${item.code}`)
-                      .fontSize(16)
-                      .fontColor('#888')
-                      .margin({ left: 10 })
+                  Column() {
+                    Row() {
+                      Text(item.cn)
+                        .fontSize(18)
+                        .fontColor($r('sys.color.white'))
+                        .margin({ left: 10 })
+                        .layoutWeight(1)
+                      Text(`${item.code}`)
+                        .fontSize(16)
+                        .fontColor('#888')
+                        .margin({ right: 20 })
+                    }
+                    .width('100%')
+                    .height(50)
+
+                    Divider()
+                      .strokeWidth(1)
+                      .color('#333')
+                      .margin({ left: 10, right: 10 })
                   }
-                  .width('100%')
-                  .height(50)
                   .backgroundColor('#1c1c1e')
+                  .padding(10)
                   .onClick(() => {
                     this.areaCode = `${item.code}`;
                     this.selectCountryIndex = index;
@@ -448,20 +463,19 @@ struct LoginPage {
                 })
               }
               .width('100%')
+              .backgroundColor('#1c1c1e')
             }
             .scrollable(ScrollDirection.Vertical)
-            .scrollBar(BarState.On)
+            .scrollBar(BarState.Off)
             .scrollBarColor('#888')
             .scrollBarWidth(4)
+            .enableScrollInteraction(true)
             .width('100%')
             .height('100%')
           }
-          .backgroundColor('#1c1c1e')
-          .borderRadius({ topLeft: 20, topRight: 20 })
         }
         .backgroundColor('rgba(0, 0, 0, 0.5)')
         .alignItems(HorizontalAlign.Start)
-        .opacity(0.5)
         .width('100%')
         .height('100%')
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM, SafeAreaEdge.TOP],)
