@@ -1,9 +1,27 @@
 import countries from '../../assets/country-code.json'
+import { BasicDataSource } from '../utils/BasicDataSource'
 
 interface CountryStruct {
   cn: string;
   en: string;
   code: string;
+}
+
+class CountryDateSource extends BasicDataSource<CountryStruct> {
+  private data: CountryStruct[] = [];
+
+  constructor(initialData: CountryStruct[]) {
+    super();
+    this.data = initialData;
+  }
+
+  public totalCount(): number {
+    return this.data.length;
+  }
+
+  getData(index: number): CountryStruct {
+    return this.data[index];
+  }
 }
 
 @Entry
@@ -14,7 +32,9 @@ struct LoginPage {
   @State phone: string = '';
   @State agree: boolean = false;
   @State countryList: CountryStruct[] = countries;
+  private countryDataSource: CountryDateSource = new CountryDateSource(this.countryList);
   @State selectCountryIndex: number = 0; //当前选中的国家索引
+  @State CodeArea: string = 'A';
   // 弹窗显示
   @State showExperiencePopup: boolean = false;
   @State showProblemPopup: boolean = false;
@@ -429,10 +449,22 @@ struct LoginPage {
               .justifyContent(FlexAlign.Start)
             }
 
+            //A-z标题
+            Column() {
+              Text(this.CodeArea)
+                .fontSize(18)
+                .fontColor($r('sys.color.white'))
+                .fontWeight(FontWeight.Bold)
+                .margin({ top: 10, bottom: 10, left: 20 })
+            }
+            .backgroundColor('#1c1c1e')
+            .width('100%')
+            .alignItems(HorizontalAlign.Start)
+
             // 国家和地区列表
             Scroll() {
               Column() {
-                ForEach(this.countryList, (item: CountryStruct, index) => {
+                LazyForEach(this.countryDataSource, (item: CountryStruct, index) => {
                   Column() {
                     Row() {
                       Text(item.cn)
@@ -460,7 +492,7 @@ struct LoginPage {
                     this.selectCountryIndex = index;
                     this.togglePopupWithAnimation('countryList');
                   })
-                })
+                }, (item: CountryStruct) => item.code)
               }
               .width('100%')
               .backgroundColor('#1c1c1e')
@@ -473,12 +505,12 @@ struct LoginPage {
             .width('100%')
             .height('100%')
           }
+          .backgroundColor('rgba(0, 0, 0, 0.5)')
+          .alignItems(HorizontalAlign.Start)
+          .width('100%')
+          .height('100%')
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM, SafeAreaEdge.TOP],)
         }
-        .backgroundColor('rgba(0, 0, 0, 0.5)')
-        .alignItems(HorizontalAlign.Start)
-        .width('100%')
-        .height('100%')
-        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM, SafeAreaEdge.TOP],)
       }
     }
   }
