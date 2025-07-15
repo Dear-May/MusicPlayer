@@ -1,10 +1,15 @@
-import countries from '../../assets/country-code.json'
+import countries from '../../assets/country_code_cn.json'
 import { BasicDataSource } from '../utils/BasicDataSource'
 
-interface CountryStruct {
+interface CountryInfoStruct {
   cn: string;
   en: string;
   code: string;
+}
+
+interface CountryStruct {
+  title: string;
+  project: CountryInfoStruct[];
 }
 
 class CountryDateSource extends BasicDataSource<CountryStruct> {
@@ -24,22 +29,41 @@ class CountryDateSource extends BasicDataSource<CountryStruct> {
   }
 }
 
+
 @Entry
 @Component
 struct LoginPage {
   uiContext: UIContext | undefined = undefined;
+  listScroller: ListScroller = new ListScroller()
   @State areaCode: string = '+86';
   @State phone: string = '';
   @State agree: boolean = false;
   @State countryList: CountryStruct[] = countries;
   private countryDataSource: CountryDateSource = new CountryDateSource(this.countryList);
   @State selectCountryIndex: number = 0; //当前选中的国家索引
-  @State CodeArea: string = 'A';
+  @State letterIndex: number = 0;
+  @State AlphabetList: string[] = ['常', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+  scroller: Scroller = new Scroller();
   // 弹窗显示
   @State showExperiencePopup: boolean = false;
   @State showProblemPopup: boolean = false;
   @State showOtherWaysLogin: boolean = false;
   @State showCountryListPopup: boolean = false;
+
+  @Builder
+  itemHead(text: string) {
+    Column() {
+      Text(text)
+        .fontSize(18)
+        .fontColor($r('sys.color.white'))
+        .fontWeight(FontWeight.Bold)
+        .margin({ top: 10, bottom: 10, left: 20 })
+    }
+    .backgroundColor('#1c1c1e')
+    .width('100%')
+    .alignItems(HorizontalAlign.Start)
+  }
 
   aboutToAppear() {
     this.uiContext = this.getUIContext();
@@ -113,19 +137,26 @@ struct LoginPage {
           .padding(15)
 
           // 手机输入框
-          Row({ space: 10 }) {
+          Row({ space: 5 }) {
             Select([])
               .value(this.areaCode)
               .fontColor('#ccc')
               .selectedOptionFont({ weight: FontWeight.Bold, size: 20 })
+              .font({ size: 20 })
               .onClick(() => this.togglePopupWithAnimation('countryList'))
+
+            Divider()
+              .vertical(true)
+              .height(30)
+              .color('#ff999999')
+              .strokeWidth(1)
 
             TextInput({
               placeholder: '输入手机号',
               text: this.phone,
             })
               .fontColor('#ccc')
-              .fontSize(18)
+              .fontSize(20)
               .fontWeight(FontWeight.Bold)
               .layoutWeight(1) // 使用剩余空间
               .maxLength(11)
@@ -449,59 +480,89 @@ struct LoginPage {
               .justifyContent(FlexAlign.Start)
             }
 
-            //A-z标题
-            Column() {
-              Text(this.CodeArea)
-                .fontSize(18)
-                .fontColor($r('sys.color.white'))
-                .fontWeight(FontWeight.Bold)
-                .margin({ top: 10, bottom: 10, left: 20 })
+            // 国家和地区列表
+            Row() {
+              Scroll(this.scroller) {
+                Column() {
+                  List({ space: 5, scroller: this.listScroller }) {
+                    LazyForEach(this.countryDataSource, (item: CountryStruct) => {
+                      ListItemGroup({ header: this.itemHead(item.title) }) {
+                        ForEach(item.project, (item: CountryInfoStruct, index) => {
+                          ListItem() {
+                            Column() {
+                              Row() {
+                                Text(item.cn)
+                                  .fontSize(18)
+                                  .fontColor($r('sys.color.white'))
+                                  .margin({ left: 10 })
+                                  .layoutWeight(1)
+                                Text(`${item.code}`)
+                                  .fontSize(16)
+                                  .fontColor('#888')
+                                  .margin({ right: 20 })
+                              }
+                              .width('100%')
+                              .height(40)
+
+                              Divider()
+                                .strokeWidth(1)
+                                .color('#333')
+                                .margin({ left: 10, right: 10 })
+                            }
+                            .backgroundColor('#1c1c1e')
+                            .padding(10)
+                            .onClick(() => {
+                              this.areaCode = `${item.code}`;
+                              this.selectCountryIndex = index;
+                              this.togglePopupWithAnimation('countryList');
+                            })
+                          }
+                        })
+                      }
+                    }, (item: CountryStruct) => item.title)
+                  }
+                  .width('100%')
+                  .height('100%')
+                  .sticky(StickyStyle.Header)
+                  .edgeEffect(EdgeEffect.None)
+                  .onScrollIndex((start: number) => {
+                    this.letterIndex = start
+                  })
+                }
+                .width('100%')
+                .backgroundColor('#1c1c1e')
+              }
+              .scrollable(ScrollDirection.Vertical)
+              .scrollBar(BarState.Off)
+              .scrollBarColor('#888')
+              .scrollBarWidth(4)
+              .enableScrollInteraction(true)
+              .layoutWeight(1)
+              .height('100%')
+
+              // 右侧导航栏
+              Column() {
+                AlphabetIndexer({ arrayValue: this.AlphabetList, selected: this.letterIndex })
+                  .color($r('sys.color.white'))
+                  .selectedColor($r('sys.color.white'))
+                  .popupColor($r('sys.color.white'))
+                  .alignStyle(IndexerAlign.Right) // 弹出框在索引条左侧弹出
+                  .popupBackground('#ffb7b7b7') // 弹出框背景颜色
+                  .usingPopup(true) // 是否显示弹出框
+                  .font({ size: 16 })
+                  .onSelect((index: number) => {
+                    this.listScroller.scrollToItemInGroup(index, 0)
+                  })
+              }
+              .borderRadius(20)
+              .width("12%")
+              .padding(5)
+              .justifyContent(FlexAlign.Start)
+              .backgroundColor('#6d6d6f')
+              .padding(10)
+              .margin({ top: -100 })
             }
             .backgroundColor('#1c1c1e')
-            .width('100%')
-            .alignItems(HorizontalAlign.Start)
-
-            // 国家和地区列表
-            Scroll() {
-              Column() {
-                LazyForEach(this.countryDataSource, (item: CountryStruct, index) => {
-                  Column() {
-                    Row() {
-                      Text(item.cn)
-                        .fontSize(18)
-                        .fontColor($r('sys.color.white'))
-                        .margin({ left: 10 })
-                        .layoutWeight(1)
-                      Text(`${item.code}`)
-                        .fontSize(16)
-                        .fontColor('#888')
-                        .margin({ right: 20 })
-                    }
-                    .width('100%')
-                    .height(50)
-
-                    Divider()
-                      .strokeWidth(1)
-                      .color('#333')
-                      .margin({ left: 10, right: 10 })
-                  }
-                  .backgroundColor('#1c1c1e')
-                  .padding(10)
-                  .onClick(() => {
-                    this.areaCode = `${item.code}`;
-                    this.selectCountryIndex = index;
-                    this.togglePopupWithAnimation('countryList');
-                  })
-                }, (item: CountryStruct) => item.code)
-              }
-              .width('100%')
-              .backgroundColor('#1c1c1e')
-            }
-            .scrollable(ScrollDirection.Vertical)
-            .scrollBar(BarState.Off)
-            .scrollBarColor('#888')
-            .scrollBarWidth(4)
-            .enableScrollInteraction(true)
             .width('100%')
             .height('100%')
           }
