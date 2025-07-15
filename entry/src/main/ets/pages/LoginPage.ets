@@ -85,14 +85,16 @@ struct LoginPage {
     })
   }
 
-  private RouterToAccountRecovery() {
-    this.getUIContext().getRouter().pushUrl({ url: 'pages/AccountRecoveryPage' }, (err) => {
-      if (err) {
-        console.error('页面跳转失败', err);
-      } else {
-        console.info('页面跳转成功');
-      }
-    });
+  private RouterToPage(text: string, parms: string) {
+    this.getUIContext()
+      .getRouter()
+      .pushUrl({ url: text, params: { type: parms, source: 'loginPage' } }, (err) => {
+        if (err) {
+          console.error('页面跳转失败', err);
+        } else {
+          console.info('页面跳转成功');
+        }
+      });
   }
 
   // 顶部内容
@@ -165,13 +167,21 @@ struct LoginPage {
             .textAlign(TextAlign.Start)
             .lineHeight(22)
             .margin({ bottom: 5 })
-          Text('《服务条款》、 《隐私政策》')
+          Text('《服务条款》、')
             .fontSize(14)
             .fontColor('#3388ff')
             .textAlign(TextAlign.Start)
             .lineHeight(22)
             .onClick(() => {
-              console.log('点击了《服务条款》、 《隐私政策》')
+              this.RouterToPage('pages/TermPage', 'terms');
+            })
+          Text('《隐私政策》')
+            .fontSize(14)
+            .fontColor('#3388ff')
+            .textAlign(TextAlign.Start)
+            .lineHeight(22)
+            .onClick(() => {
+              this.RouterToPage('pages/TermPage', 'policy');
             })
         }
         .alignItems(HorizontalAlign.Start)
@@ -194,13 +204,7 @@ struct LoginPage {
             .borderRadius(24)
             .width('45%')
             .onClick(() => {
-              this.getUIContext().getRouter().pushUrl({ url: 'pages/Index' }, (err) => {
-                if (err) {
-                  console.error('页面跳转失败', err);
-                } else {
-                  console.info('页面跳转成功');
-                }
-              });
+              this.RouterToPage('pages/Index', '');
             })
         }
       }
@@ -223,6 +227,16 @@ struct LoginPage {
 
   // 问题弹窗
   @Builder
+  problemChoose(text: string, way: string) {
+    Text(text)
+      .fontSize(18)
+      .fontColor('white')
+      .onClick(() => {
+        this.RouterToPage(way, '');
+      })
+  }
+
+  @Builder
   problemPopup() {
     Column() {
       this.blankStyle('problem')
@@ -240,30 +254,9 @@ struct LoginPage {
           .strokeWidth(2)
         // 选项
         Column({ space: 20 }) {
-          Text('手机号已更换')
-            .fontSize(18)
-            .fontColor('white')
-            .onClick(() => {
-              this.RouterToAccountRecovery();
-            })
-          Text('找回原账号')
-            .fontSize(18)
-            .fontColor('white')
-            .onClick(() => {
-              this.RouterToAccountRecovery();
-            })
-          Text('其他问题')
-            .fontSize(18)
-            .fontColor('white')
-            .onClick(() => {
-              this.getUIContext().getRouter().pushUrl({ url: 'pages/CustomerServicePage' }, (err) => {
-                if (err) {
-                  console.error('页面跳转失败', err);
-                } else {
-                  console.info('页面跳转成功');
-                }
-              });
-            })
+          this.problemChoose('手机号已更换', 'pages/AccountRecoveryPage')
+          this.problemChoose('找回原账号', 'pages/AccountRecoveryPage')
+          this.problemChoose('其他问题', 'pages/CustomerServicePage')
         }
         .alignItems(HorizontalAlign.Start)
       }
@@ -420,7 +413,7 @@ struct LoginPage {
       .alignItems(HorizontalAlign.Start)
       .width('100%')
       .height('100%')
-      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM, SafeAreaEdge.TOP],)
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM, SafeAreaEdge.TOP])
     }
   }
 
@@ -530,11 +523,17 @@ struct LoginPage {
               Text('我已阅读并同意')
                 .fontColor('#aaa')
                 .fontSize(12)
-              Text('《服务条款》、 《隐私政策》')
+              Text('《服务条款》、')
                 .fontColor('#3388ff')
                 .fontSize(12)
                 .onClick(() => {
-                  console.log('点击了《服务条款》、 《隐私政策》')
+                  this.RouterToPage('pages/TermPage', 'terms');
+                })
+              Text('《隐私政策》')
+                .fontColor('#3388ff')
+                .fontSize(12)
+                .onClick(() => {
+                  this.RouterToPage('pages/TermPage', 'policy');
                 })
             }
             .margin({ top: 10 })
@@ -568,8 +567,11 @@ struct LoginPage {
       }
     }
     .onShown(() => {
-      // 在 OFFSET 模式下当键盘弹起的时候整个界面上移
-      this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.OFFSET);
+      if (this.uiContext) {
+        this.uiContext.setKeyboardAvoidMode(KeyboardAvoidMode.OFFSET);
+      } else {
+        console.warn("uiContext is not available in onShown");
+      }
     })
   }
 }

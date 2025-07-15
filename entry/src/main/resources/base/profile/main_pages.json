@@ -3,6 +3,7 @@
     "pages/WelcomePage",
     "pages/LoginPage",
     "pages/Index",
+    "pages/TermPage",
     "pages/AccountRecoveryPage",
     "pages/CustomerServicePage",
     "pages/TestPage"
