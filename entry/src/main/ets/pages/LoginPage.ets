@@ -167,22 +167,24 @@ struct LoginPage {
             .textAlign(TextAlign.Start)
             .lineHeight(22)
             .margin({ bottom: 5 })
-          Text('《服务条款》、')
-            .fontSize(14)
-            .fontColor('#3388ff')
-            .textAlign(TextAlign.Start)
-            .lineHeight(22)
-            .onClick(() => {
-              this.RouterToPage('pages/TermPage', 'terms');
-            })
-          Text('《隐私政策》')
-            .fontSize(14)
-            .fontColor('#3388ff')
-            .textAlign(TextAlign.Start)
-            .lineHeight(22)
-            .onClick(() => {
-              this.RouterToPage('pages/TermPage', 'policy');
-            })
+          Row() {
+            Text('《服务条款》、')
+              .fontSize(14)
+              .fontColor('#3388ff')
+              .textAlign(TextAlign.Start)
+              .lineHeight(22)
+              .onClick(() => {
+                this.RouterToPage('pages/TermPage', 'terms');
+              })
+            Text('《隐私政策》')
+              .fontSize(14)
+              .fontColor('#3388ff')
+              .textAlign(TextAlign.Start)
+              .lineHeight(22)
+              .onClick(() => {
+                this.RouterToPage('pages/TermPage', 'policy');
+              })
+          }
         }
         .alignItems(HorizontalAlign.Start)
         .width('100%')
