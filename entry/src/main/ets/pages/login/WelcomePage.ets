@@ -6,7 +6,7 @@ struct WelcomePage {
 
   async aboutToAppear() {
     setTimeout(() => {
-      this.getUIContext().getRouter().replaceUrl({ url: 'pages/LoginPage' }, (err) => {
+      this.getUIContext().getRouter().replaceUrl({ url: 'pages/login/LoginPage' }, (err) => {
         if (err) {
           console.error('页面跳转失败', err);
         } else {

@@ -1,9 +1,9 @@
 {
   "src": [
-    "pages/WelcomePage",
-    "pages/LoginPage",
+    "pages/login/WelcomePage",
+    "pages/login/LoginPage",
     "pages/Index",
-    "pages/TermPage",
+    "pages/login/TermPage",
     "pages/AccountRecoveryPage",
     "pages/CustomerServicePage",
     "pages/TestPage"

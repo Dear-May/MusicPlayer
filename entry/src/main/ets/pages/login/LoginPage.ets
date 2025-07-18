@@ -1,6 +1,6 @@
 import { KeyboardAvoidMode } from '@kit.ArkUI';
-import countries from '../../assets/country_code_cn.json'
-import { BasicDataSource } from '../utils/BasicDataSource'
+import countries from '../../../assets/country_code_cn.json'
+import { BasicDataSource } from '../../utils/BasicDataSource'
 
 interface CountryInfoStruct {
   cn: string;
@@ -174,7 +174,7 @@ struct LoginPage {
               .textAlign(TextAlign.Start)
               .lineHeight(22)
               .onClick(() => {
-                this.RouterToPage('pages/TermPage', 'terms');
+                this.RouterToPage('pages/login/TermPage', 'terms');
               })
             Text('《隐私政策》')
               .fontSize(14)
@@ -182,7 +182,7 @@ struct LoginPage {
               .textAlign(TextAlign.Start)
               .lineHeight(22)
               .onClick(() => {
-                this.RouterToPage('pages/TermPage', 'policy');
+                this.RouterToPage('pages/login/TermPage', 'policy');
               })
           }
         }
@@ -529,13 +529,13 @@ struct LoginPage {
                 .fontColor('#3388ff')
                 .fontSize(12)
                 .onClick(() => {
-                  this.RouterToPage('pages/TermPage', 'terms');
+                  this.RouterToPage('pages/login/TermPage', 'terms');
                 })
               Text('《隐私政策》')
                 .fontColor('#3388ff')
                 .fontSize(12)
                 .onClick(() => {
-                  this.RouterToPage('pages/TermPage', 'policy');
+                  this.RouterToPage('pages/login/TermPage', 'policy');
                 })
             }
             .margin({ top: 10 })
