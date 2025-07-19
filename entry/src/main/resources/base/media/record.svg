@@ -1,0 +1,30 @@
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- 黑胶背景 -->
+  <circle cx="150" cy="150" r="145" fill="black" />
+
+  <!-- 圈纹：黑胶唱片纹理 -->
+  <g stroke="gray" stroke-width="0.3">
+    <circle cx="150" cy="150" r="140" fill="none" />
+    <circle cx="150" cy="150" r="135" fill="none" />
+    <circle cx="150" cy="150" r="130" fill="none" />
+    <circle cx="150" cy="150" r="125" fill="none" />
+    <circle cx="150" cy="150" r="120" fill="none" />
+    <circle cx="150" cy="150" r="115" fill="none" />
+    <circle cx="150" cy="150" r="110" fill="none" />
+    <circle cx="150" cy="150" r="105" fill="none" />
+    <circle cx="150" cy="150" r="100" fill="none" />
+  </g>
+
+  <!-- 中心红圈 -->
+  <circle cx="150" cy="150" r="55" fill="red" />
+
+  <!-- 内部白色图标 (网易云简化版，G形状占位) -->
+  <path d="M150 120 
+           a30 30 0 1 1 -0.1 0
+           M150 135 
+           a15 15 0 1 0 0.1 0"
+        fill="none" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 最中心的小圆点 -->
+  <circle cx="150" cy="150" r="5" fill="white" />
+</svg>
