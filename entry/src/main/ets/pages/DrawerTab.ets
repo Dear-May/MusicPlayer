@@ -62,7 +62,7 @@ struct DrawerTab {
     .width(272)
     .height(344)
     .backgroundColor(Color.White)
-    .borderRadius(20)
+    .borderRadius({ topRight: 16, bottomRight: 16 })
   }
 }
 

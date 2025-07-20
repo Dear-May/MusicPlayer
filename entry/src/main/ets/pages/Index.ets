@@ -83,13 +83,16 @@ struct Index {
           .width(25)
           .height(25)
           .margin({ right: 15 })
+          .onClick(() => {
+            console.log('点击了播放列表')
+          })
       }
     }
     .width('95%')
     .height(45)
     .borderRadius(30)
     .align(Alignment.Top)
-    .offset({ y: -55 }) // 向上偏移一半高度，实现半露效果
+    .offset({ y: -75 }) // 向上偏移一半高度，实现半露效果
     .backgroundColor('#1d1d1f')
     .borderRadius(30)
     .zIndex(1)
@@ -108,7 +111,7 @@ struct Index {
       .width(25)
       .aspectRatio(1)
       .borderRadius(22)
-      .margin({ top: 25 })
+      .margin({ top: 10 })
       .justifyContent(FlexAlign.Center)
 
       Text(item.title)
@@ -138,7 +141,7 @@ struct Index {
                   // Find()
                 } else if (item.name === 'moment') {
                   // Moment()
-                } else if (item.name === 'mine') {
+                } else if (item.name === 'mine' && !this.show) {
                   // Mine({ playState: $playState })
                 } else {
                   // Like()
@@ -148,7 +151,7 @@ struct Index {
               .backgroundColor($r('sys.color.white'))
             })
           }
-          .barHeight(75)
+          .barHeight(100)
           .onChange(index => {
             this.currentName = tabsData[index].name
           })
@@ -179,8 +182,7 @@ struct Index {
       width: 24,
       icons: {
         shown: $r('app.media.menu'),
-        hidden: $r('app.media.menu'),
-        switching: $r('app.media.menu')
+        hidden: $r('app.media.menu')
       }
     })
     .onChange((value: boolean) => {

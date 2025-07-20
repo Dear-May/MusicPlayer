@@ -454,15 +454,15 @@ struct LoginPage {
   build() {
     NavDestination() {
       Stack({ alignContent: Alignment.Center }) {
-        Column({ space: 20 }) {
+        Column({ space: 10 }) {
           this.titleBar();
 
           Column() {
             // LOGO
             Column() {
               Image($r("app.media.foreground"))
-                .width('60')
-                .height('60')
+                .width(60)
+                .height(60)
                 .objectFit(ImageFit.Contain)
             }
             .width(90)
@@ -472,76 +472,78 @@ struct LoginPage {
             .padding(15)
 
             // 手机输入框
-            Row({ space: 5 }) {
-              Select([])
-                .value(this.areaCode)
-                .fontColor('#ccc')
-                .selectedOptionFont({ weight: FontWeight.Bold, size: 20 })
-                .font({ size: 20 })
-                .onClick(() => this.togglePopupWithAnimation('countryList'))
+            Column() {
+              Row({ space: 5 }) {
+                Select([])
+                  .value(this.areaCode)
+                  .fontColor('#ccc')
+                  .selectedOptionFont({ weight: FontWeight.Bold, size: 20 })
+                  .font({ size: 20 })
+                  .onClick(() => this.togglePopupWithAnimation('countryList'))
 
-              Divider()
-                .vertical(true)
-                .height(30)
-                .color('#ff999999')
-                .strokeWidth(1)
+                Divider()
+                  .vertical(true)
+                  .height(30)
+                  .color('#ff999999')
+                  .strokeWidth(1)
 
-              TextInput({
-                placeholder: '输入手机号',
-                text: this.phone,
-              })
-                .fontColor('#ccc')
-                .fontSize(20)
-                .fontWeight(FontWeight.Bold)
-                .layoutWeight(1) // 使用剩余空间
-                .maxLength(11)
-                .caretColor('#ec271b')
-                .inputFilter("[0-9]")
-                .placeholderColor('#ff4f4f4f')
-                .backgroundColor('#2a2a2a')
-            }
-            .padding(10)
-            .backgroundColor('#2a2a2a')
-            .borderRadius(10)
-            .margin({ top: '45%', left: 30, right: 30 })
-
-            // 登录按钮
-            Button('验证码登录')
-              .fontSize(16)
-              .fontColor('#fff')
-              .backgroundColor('#fe3a3b')
-              .borderRadius(22.5)
-              .width('75%')
-              .height(45)
-              .margin({ top: 20 })
-              .onClick(() => {
-                console.log('点击登录，手机号:', this.phone)
-              })
-
-            // 勾选协议
-            Row({ space: 5 }) {
-              Checkbox({ group: 'agree' })
-                .onChange(val => this.agree = val)
-              Text('我已阅读并同意')
-                .fontColor('#aaa')
-                .fontSize(12)
-              Text('《服务条款》、')
-                .fontColor('#3388ff')
-                .fontSize(12)
-                .onClick(() => {
-                  this.RouterToPage('pages/login/TermPage', 'terms');
+                TextInput({
+                  placeholder: '输入手机号',
+                  text: this.phone,
                 })
-              Text('《隐私政策》')
-                .fontColor('#3388ff')
-                .fontSize(12)
-                .onClick(() => {
-                  this.RouterToPage('pages/login/TermPage', 'policy');
-                })
-            }
-            .margin({ top: 10 })
+                  .fontColor('#ccc')
+                  .fontSize(20)
+                  .fontWeight(FontWeight.Bold)
+                  .layoutWeight(1) // 使用剩余空间
+                  .maxLength(11)
+                  .caretColor('#ec271b')
+                  .inputFilter("[0-9]")
+                  .placeholderColor('#ff4f4f4f')
+                  .backgroundColor('#2a2a2a')
+              }
+              .padding(10)
+              .backgroundColor('#2a2a2a')
+              .borderRadius(10)
+              .margin({ top: "45%", left: 30, right: 30 })
 
-            if (this.showOtherWaysLogin) {
-              this.otherWaysLoginPopup()
+              // 登录按钮
+              Button('验证码登录')
+                .fontSize(16)
+                .fontColor('#fff')
+                .backgroundColor('#fe3a3b')
+                .borderRadius(22.5)
+                .width('75%')
+                .height(45)
+                .margin({ top: 20 })
+                .onClick(() => {
+                  console.log('点击登录，手机号:', this.phone)
+                })
+
+              // 勾选协议
+              Row({ space: 5 }) {
+                Checkbox({ group: 'agree' })
+                  .onChange(val => this.agree = val)
+                Text('我已阅读并同意')
+                  .fontColor('#aaa')
+                  .fontSize(12)
+                Text('《服务条款》、')
+                  .fontColor('#3388ff')
+                  .fontSize(12)
+                  .onClick(() => {
+                    this.RouterToPage('pages/login/TermPage', 'terms');
+                  })
+                Text('《隐私政策》')
+                  .fontColor('#3388ff')
+                  .fontSize(12)
+                  .onClick(() => {
+                    this.RouterToPage('pages/login/TermPage', 'policy');
+                  })
+              }
+              .margin({ top: 10 })
+
+              if (this.showOtherWaysLogin) {
+                this.otherWaysLoginPopup()
+              }
             }
           }
           .margin({ top: '30%' })
