@@ -1,50 +1,50 @@
-/*
- *   Copyright (c) 2025 Huawei Device Co., Ltd.
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- */
-
 export interface songItemType {
   img: string
   name: string
   author: string
   src: string
-  id:string
+  id: string
 }
+
+export interface recommendCardType {
+  icon?: Resource
+  title: string
+  subtitle: string
+  tag?: string
+  img: Resource
+  canPlay?: boolean
+  isPlay?: boolean
+}
+
 export interface recommendListType {
   img: string
   title: string
   count: string
 }
+
 export interface recommendDailyType {
   img: string
   title: string
-  type:string
-  song:string
+  type: string
+  song: string
   bottom: string
 }
+
 export interface favoriteListType {
-  name:string
-  nickName:string
-  avatar:ResourceStr
-  songs:songItemType[]
+  name: string
+  nickName: string
+  avatar: ResourceStr
+  songs: songItemType[]
 }
+
 export interface momentListType {
-  author:string
-  avatar:string
-  content:string
-  comment:string
-  song:songItemType
+  author: string
+  avatar: string
+  content: string
+  comment: string
+  song: songItemType
 }
+
 export interface paihangListType {
   img: string
   title1: string
@@ -57,6 +57,7 @@ export interface paihangListType {
   song3: string
   author3: string
 }
+
 export class SongItemTypeModel implements songItemType {
   img: string = ''
   name: string = ''
@@ -72,6 +73,7 @@ export class SongItemTypeModel implements songItemType {
     this.id = model.id
   }
 }
+
 export class RecommendListTypeModel implements recommendListType {
   img: string = ''
   title: string = ''
@@ -83,11 +85,12 @@ export class RecommendListTypeModel implements recommendListType {
     this.count = model.count
   }
 }
+
 export class RecommendDailyTypeModel implements recommendDailyType {
   img: string = ''
   title: string = ''
   type: string = ''
-  song:string = ''
+  song: string = ''
   bottom: string = ''
 
   constructor(model: recommendDailyType) {
@@ -97,6 +100,7 @@ export class RecommendDailyTypeModel implements recommendDailyType {
     this.bottom = model.bottom
   }
 }
+
 export class FavoriteListTypeModel implements favoriteListType {
   name: string = ''
   nickName: string = ''
@@ -110,6 +114,7 @@ export class FavoriteListTypeModel implements favoriteListType {
     this.songs = model.songs
   }
 }
+
 export class MomentListTypeModel implements momentListType {
   author: string = ''
   avatar: string = ''
@@ -125,6 +130,7 @@ export class MomentListTypeModel implements momentListType {
     this.song = model.song
   }
 }
+
 export class PaihangListTypeModel implements paihangListType {
   img: string = ''
   title1: string = ''

@@ -2,11 +2,11 @@ import { SONG_KEY, tabsData } from '../constants/Index'
 import { TabClass } from '../models/Index';
 import { PlayStateType } from '../models/PlayState'
 import DrawerTab from './DrawerTab';
-import Recommend from './recommend/Recommend';
+import Recommend from './recommend/Recommend'
 
 @Entry
 @Component
-struct Index {
+struct RecommendView {
   uiContext: UIContext | undefined = undefined;
   @State currentName: string = 'recommend';
   @State currentNameBool: boolean = this.currentName ? true : false;
@@ -156,6 +156,7 @@ struct Index {
             this.currentName = tabsData[index].name
           })
         }
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       }
       .width('100%')
       .height('110%')
@@ -193,11 +194,10 @@ struct Index {
     .width('100%')
     .height('110%')
     .translate({ y: -40 })
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM, SafeAreaEdge.TOP])
   }
 }
 
 @Builder
 export function IndexBuilder(): void {
-  Index();
+  RecommendView();
 }

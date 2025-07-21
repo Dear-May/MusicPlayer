@@ -3,7 +3,7 @@ import ListenBook from '../../views/recommend/ListenBook';
 import ListenFree from '../../views/recommend/ListenFree';
 import Music from '../../views/recommend/Music';
 import Podcast from '../../views/recommend/Podcast';
-import Index from '../../views/recommend/Recommend';
+import RecommendView from '../../views/recommend/RecommendView'
 
 class TabsDateSource extends BasicDataSource<string> {
   private data: string[] = [];
@@ -81,6 +81,7 @@ struct Recommend {
     }
     .width('100%')
     .backgroundColor('#0e0d11')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
     .padding({
       top: 40,
       left: 16,
@@ -92,7 +93,7 @@ struct Recommend {
   TabContent(index: number) {
     TabContent() {
       if (index === 0) {
-        Index();
+        RecommendView();
       } else if (index === 1) {
         Music();
       } else if (index === 2) {

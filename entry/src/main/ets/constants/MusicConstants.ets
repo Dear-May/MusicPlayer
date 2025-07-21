@@ -4,7 +4,8 @@ import {
   recommendDailyType,
   favoriteListType,
   momentListType,
-  paihangListType
+  paihangListType,
+  recommendCardType
 } from '../models/Music'
 import { TabClass } from '../models/Index'
 
@@ -31,6 +32,61 @@ export const tabsData: TabClass[] = [
   icon: $r('app.media.ic_mine_gt'),
   iconLight: $r('app.media.ic_mine_pt')
 }]
+
+// 每日推荐卡片数据
+export const recommendCardList: recommendCardType[] = [
+  {
+    icon: $r('app.media.ic_recommend_gt'),
+    title: '每日推荐',
+    subtitle: '今日限定好歌推荐',
+    img: $r('app.media.image_1'),
+    tag: '免费听',
+    canPlay: true,
+    isPlay: false
+  },
+  {
+    icon: $r('app.media.ic_recommend_gt'),
+    title: '漫游',
+    subtitle: '多样频道无限畅听',
+    img: $r('app.media.image_1'),
+  },
+  {
+    title: '新歌首发',
+    subtitle: '今日限定好歌推荐',
+    img: $r('app.media.image_1'),
+  },
+  {
+    title: '私人雷达',
+    subtitle: '今日限定好歌推荐',
+    img: $r('app.media.image_1'),
+    canPlay: true,
+    isPlay: false
+  },
+  {
+    title: '相似歌曲',
+    subtitle: '今日限定好歌推荐',
+    img: $r('app.media.image_1'),
+  },
+  {
+    title: '相似艺人',
+    subtitle: '今日限定好歌推荐',
+    img: $r('app.media.image_1'),
+  },
+  {
+    title: '每日播客',
+    subtitle: '今日限定好歌推荐',
+    img: $r('app.media.image_1'),
+    canPlay: true,
+    isPlay: false
+  },
+  {
+    title: '独家策划',
+    subtitle: '今日限定好歌推荐',
+    img: $r('app.media.image_1'),
+    canPlay: true,
+    isPlay: false
+  },
+]
 
 // 每日推荐数据
 export const dailyRecommend: recommendDailyType[] = [
