@@ -39,7 +39,7 @@ export const recommendCardList: recommendCardType[] = [
     icon: $r('app.media.ic_recommend_gt'),
     title: '每日推荐',
     subtitle: '今日限定好歌推荐',
-    img: $r('app.media.image_1'),
+    img: 'images/image_1.jpg',
     tag: '免费听',
     canPlay: true,
     isPlay: false
@@ -48,41 +48,41 @@ export const recommendCardList: recommendCardType[] = [
     icon: $r('app.media.ic_recommend_gt'),
     title: '漫游',
     subtitle: '多样频道无限畅听',
-    img: $r('app.media.image_1'),
+    img: 'images/image_1.jpg',
   },
   {
     title: '新歌首发',
     subtitle: '今日限定好歌推荐',
-    img: $r('app.media.image_1'),
+    img: 'images/image_1.jpg',
   },
   {
     title: '私人雷达',
     subtitle: '今日限定好歌推荐',
-    img: $r('app.media.image_1'),
+    img: 'images/image_1.jpg',
     canPlay: true,
     isPlay: false
   },
   {
     title: '相似歌曲',
     subtitle: '今日限定好歌推荐',
-    img: $r('app.media.image_1'),
+    img: 'images/image_1.jpg',
   },
   {
     title: '相似艺人',
     subtitle: '今日限定好歌推荐',
-    img: $r('app.media.image_1'),
+    img: 'images/image_1.jpg',
   },
   {
     title: '每日播客',
     subtitle: '今日限定好歌推荐',
-    img: $r('app.media.image_1'),
+    img: 'images/image_1.jpg',
     canPlay: true,
     isPlay: false
   },
   {
     title: '独家策划',
     subtitle: '今日限定好歌推荐',
-    img: $r('app.media.image_1'),
+    img: 'images/image_1.jpg',
     canPlay: true,
     isPlay: false
   },
@@ -128,44 +128,44 @@ export const recommendList: recommendListType[] = [
 // 歌曲列表
 export const songs: songItemType[] = [
   {
-    img: 'resources/base/media/cover.png',
+    img: 'images/image_1.jpg',
     name: 'Dream It Possible',
-    author: 'Delacey',
+    author: 'Delacey1',
     src: '',
     id: '0000'
   },
   {
     img: 'resources/base/media/cover.png',
     name: 'Dream It Possible',
-    author: 'Delacey',
+    author: 'Delacey2',
     src: '',
     id: '0001'
   },
   {
     img: 'resources/base/media/cover.png',
     name: 'Dream It Possible',
-    author: 'Delacey',
+    author: 'Delacey3',
     src: '',
     id: '0002'
   },
   {
-    img: 'resources/base/media/cover.png',
+    img: 'images/image_1.jpg',
     name: 'Dream It Possible',
-    author: 'Delacey',
+    author: 'Delacey4',
     src: '',
     id: '0003'
   },
   {
     img: 'resources/base/media/cover.png',
     name: 'Dream It Possible',
-    author: 'Delacey',
+    author: 'Delacey5',
     src: '',
     id: '0004'
   },
   {
     img: 'resources/base/media/cover.png',
     name: 'Dream It Possible',
-    author: 'Delacey',
+    author: 'Delacey6',
     src: '',
     id: '0005'
   },
@@ -210,41 +210,6 @@ export const songs: songItemType[] = [
     author: 'Delacey',
     src: '',
     id: '0011'
-  },
-  {
-    img: 'resources/base/media/cover.png',
-    name: 'Dream It Possible',
-    author: 'Delacey',
-    src: '',
-    id: '0012'
-  },
-  {
-    img: 'resources/base/media/cover.png',
-    name: 'Dream It Possible',
-    author: 'Delacey',
-    src: '',
-    id: '0013'
-  },
-  {
-    img: 'resources/base/media/cover.png',
-    name: 'Dream It Possible',
-    author: 'Delacey',
-    src: '',
-    id: '0014'
-  },
-  {
-    img: 'resources/base/media/cover.png',
-    name: 'Dream It Possible',
-    author: 'Delacey',
-    src: '',
-    id: '0015'
-  },
-  {
-    img: 'resources/base/media/cover.png',
-    name: 'Dream It Possible',
-    author: 'Delacey',
-    src: '',
-    id: '0016'
   }
 ]
 

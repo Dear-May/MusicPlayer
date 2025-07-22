@@ -47,7 +47,7 @@ struct Recommend {
             .margin({ right: 5 })
 
           Text('🔥' + this.keyWord)
-            .width('70%')
+            .width('80%')
             .height(36)
             .fontSize(16)
             .fontColor("#969290")
@@ -67,7 +67,7 @@ struct Recommend {
         Image($r('app.media.ScanCode'))
           .width(20)
           .height(20)
-          .margin({ right: 12 })
+          .margin({ right: 6 })
           .onClick(() => {
             console.log('点击了')
           })

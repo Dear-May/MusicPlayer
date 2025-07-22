@@ -4,6 +4,7 @@ export interface songItemType {
   author: string
   src: string
   id: string
+  tag?: string
 }
 
 export interface recommendCardType {
@@ -11,7 +12,7 @@ export interface recommendCardType {
   title: string
   subtitle: string
   tag?: string
-  img: Resource
+  img: string
   canPlay?: boolean
   isPlay?: boolean
 }

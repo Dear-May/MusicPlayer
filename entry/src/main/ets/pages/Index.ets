@@ -187,7 +187,8 @@ struct RecommendView {
         offsetY: 4
       })
       .onClick(() => {
-        changeSideBarShow(this.getUIContext());
+        tryCloseSideBar(this.getUIContext(), this.show, () => {
+        })
       })
       .overlay(this.OverlayNode())
     }
