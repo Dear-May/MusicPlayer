@@ -1,9 +1,13 @@
 import { recommendCardType } from '../../models/Music'
 import { recommendCardList } from '../../constants/MusicConstants'
+import { tryCloseSideBar } from '../../constants/GlobalFunction';
+
 
 @Entry
 @Component
 struct RecommendView {
+  @StorageLink('showSideBar') show: boolean = false;
+
   @Builder
   cardList() {
     Scroll() {
@@ -106,7 +110,9 @@ struct RecommendView {
             }
           }
           .onClick(() => {
-            console.log('点击了卡片');
+            tryCloseSideBar(this.getUIContext(), this.show, () => {
+              console.log('点击了歌单');
+            })
           })
           .width(140)
         })

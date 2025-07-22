@@ -1,3 +1,4 @@
+import { changeSideBarShow, tryCloseSideBar } from '../constants/GlobalFunction';
 import { SONG_KEY, tabsData } from '../constants/Index'
 import { TabClass } from '../models/Index';
 import { PlayStateType } from '../models/PlayState'
@@ -13,19 +14,10 @@ struct RecommendView {
   @State opacityNum: number = 1;
   @State isPlaying: boolean = false;
   @State rotateAngle: number = 0;
-  @State show: boolean = false;
+  tabsController: TabsController = new TabsController();
+  @StorageLink('showSideBar') show: boolean = false;
   @StorageLink(SONG_KEY)
   playState: PlayStateType = new PlayStateType();
-
-  changeSideBarShow() {
-    this.getUIContext().animateTo({
-      duration: 1500,
-      curve: Curve.EaseOut,
-      playMode: PlayMode.Normal,
-    }, () => {
-      this.show = false;
-    })
-  }
 
   @Builder
   MusicPlayerBar() {
@@ -84,7 +76,12 @@ struct RecommendView {
           .height(25)
           .margin({ right: 15 })
           .onClick(() => {
-            console.log('点击了播放列表')
+            tryCloseSideBar(
+              this.getUIContext(),
+              this.show,
+              () => {
+                console.log('点击了播放列表');
+              });
           })
       }
     }
@@ -125,6 +122,17 @@ struct RecommendView {
     .justifyContent(FlexAlign.SpaceBetween)
   }
 
+  @Builder
+  OverlayNode() {
+    Row() {
+    }
+    .visibility(this.show ? Visibility.Visible : Visibility.Hidden)
+    .hitTestBehavior(HitTestMode.None)
+    .width('100%')
+    .height('100%')
+    .backgroundColor('#80000000')
+  }
+
   build() {
     SideBarContainer(SideBarContainerType.Overlay) {
       DrawerTab();
@@ -132,7 +140,7 @@ struct RecommendView {
         Stack({ alignContent: Alignment.Bottom }) {
           this.MusicPlayerBar();
 
-          Tabs({ barPosition: BarPosition.End }) {
+          Tabs({ barPosition: BarPosition.End, controller: this.tabsController }) {
             ForEach(tabsData, (item: TabClass) => {
               TabContent() {
                 if (item.name === 'recommend') {
@@ -141,7 +149,7 @@ struct RecommendView {
                   // Find()
                 } else if (item.name === 'moment') {
                   // Moment()
-                } else if (item.name === 'mine' && !this.show) {
+                } else if (item.name === 'mine') {
                   // Mine({ playState: $playState })
                 } else {
                   // Like()
@@ -155,6 +163,13 @@ struct RecommendView {
           .onChange(index => {
             this.currentName = tabsData[index].name
           })
+          .onContentWillChange(() => {
+            if (this.show) {
+              changeSideBarShow(this.getUIContext());
+              return false;
+            }
+            return true;
+          });
         }
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       }
@@ -172,8 +187,9 @@ struct RecommendView {
         offsetY: 4
       })
       .onClick(() => {
-        this.changeSideBarShow();
+        changeSideBarShow(this.getUIContext());
       })
+      .overlay(this.OverlayNode())
     }
     .showSideBar(this.show)
     .controlButton({

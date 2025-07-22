@@ -1,3 +1,4 @@
+import { changeSideBarShow } from '../../constants/GlobalFunction';
 import { BasicDataSource } from '../../utils/BasicDataSource';
 import ListenBook from '../../views/recommend/ListenBook';
 import ListenFree from '../../views/recommend/ListenFree';
@@ -25,6 +26,7 @@ class TabsDateSource extends BasicDataSource<string> {
 @Entry
 @Component
 struct Recommend {
+  @StorageLink('showSideBar') show: boolean = false;
   uiContext: UIContext | undefined = undefined;
   @State currentTab: number = 0;
   private tabs: string[] = ['推荐', '音乐', '播客', '听书', '免费听'];
@@ -66,6 +68,9 @@ struct Recommend {
           .width(20)
           .height(20)
           .margin({ right: 12 })
+          .onClick(() => {
+            console.log('点击了')
+          })
       }
       .height(38)
       .width('80%')
@@ -130,6 +135,13 @@ struct Recommend {
       }
       .scrollable(true)
       .animationDuration(300)
+      .onContentWillChange(() => {
+        if (this.show) {
+          changeSideBarShow(this.getUIContext());
+          return false;
+        }
+        return true;
+      });
     }
     .width('100%')
     .height('100%')
