@@ -3,6 +3,7 @@ import { SONG_KEY, tabsData } from '../constants/Index'
 import { TabClass } from '../models/Index';
 import { PlayStateType } from '../models/PlayState'
 import DrawerTab from './DrawerTab';
+import Note from './note/Note';
 import Recommend from './recommend/Recommend'
 
 @Entry
@@ -147,8 +148,8 @@ struct RecommendView {
                   Recommend()
                 } else if (item.name === 'find') {
                   // Find()
-                } else if (item.name === 'moment') {
-                  // Moment()
+                } else if (item.name === 'note') {
+                  Note()
                 } else if (item.name === 'mine') {
                   // Mine({ playState: $playState })
                 } else {
@@ -206,8 +207,8 @@ struct RecommendView {
     .onChange((value: boolean) => {
       this.show = value;
     })
-    .sideBarWidth('85%')
-    .minSideBarWidth('85%')
+    .sideBarWidth('80%')
+    .minSideBarWidth('80%')
     .width('100%')
     .height('110%')
     .translate({ y: -40 })
