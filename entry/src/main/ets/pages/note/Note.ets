@@ -1,5 +1,5 @@
 import componentUtils from '@ohos.arkui.componentUtils';
-import { changeSideBarShow, tryCloseSideBar } from '../../constants/GlobalFunction';
+import { changeSideBarShow, tryCloseSideBar, navigateToSearch } from '../../utils/GlobalFunction';
 import RecommendView from '../../views/note/RecommendView';
 
 @Entry
@@ -138,34 +138,14 @@ struct Note {
             .width(30)
             .height(30)
             .onClick(() => {
-              tryCloseSideBar(this.getUIContext(), this.show, () => {
-                this.getUIContext()
-                  .getRouter()
-                  .pushUrl({ url: 'pages/SearchPage', params: { source: 'IndexPage' } }, (err) => {
-                    if (err) {
-                      console.error('页面跳转失败', err);
-                    } else {
-                      console.info('页面跳转成功');
-                    }
-                  });
-              })
+              navigateToSearch(this.getUIContext(), this.show);
             })
 
           Image($r('app.media.ic_add'))
             .width(30)
             .height(30)
             .onClick(() => {
-              tryCloseSideBar(this.getUIContext(), this.show, () => {
-                this.getUIContext()
-                  .getRouter()
-                  .pushUrl({ url: 'pages/SearchPage', params: { source: 'IndexPage' } }, (err) => {
-                    if (err) {
-                      console.error('页面跳转失败', err);
-                    } else {
-                      console.info('页面跳转成功');
-                    }
-                  });
-              })
+              navigateToSearch(this.getUIContext(), this.show);
             })
         }
         .justifyContent(FlexAlign.End)

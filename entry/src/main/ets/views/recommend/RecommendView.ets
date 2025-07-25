@@ -1,6 +1,6 @@
 import { recommendCardType, songItemType } from '../../models/Music'
 import { recommendCardList, songs } from '../../constants/MusicConstants'
-import { tryCloseSideBar } from '../../constants/GlobalFunction';
+import { tryCloseSideBar } from '../../utils/GlobalFunction';
 import { BasicDataSource } from '../../utils/BasicDataSource';
 import { CommonConstants } from '../../constants/CommonConstants';
 
@@ -38,6 +38,12 @@ class SongDataSource extends BasicDataSource<songItemType[]> {
   }
 }
 
+interface ContentBlock {
+  type: 'cardGrid' | 'titleOnly' | 'songTag';
+  title: string;
+  tag?: string;
+}
+
 @Reusable
 struct CardItem {
   @Prop card: recommendCardType
@@ -45,7 +51,6 @@ struct CardItem {
 
   build() {
     Stack() {
-      //标题
       Row() {
         if (this.card.icon) {
           Image(this.card.icon)
@@ -64,7 +69,6 @@ struct CardItem {
       .zIndex(1)
       .offset({ y: -60 })
 
-      //标题
       Row() {
         Row() {
           if (this.card.tag) {
@@ -72,37 +76,20 @@ struct CardItem {
               .fontSize(8)
               .fontColor($r('sys.color.white'))
               .backgroundColor('#33333380')
-              .padding({
-                left: 6,
-                right: 6,
-                top: 2,
-                bottom: 2
-              })
+              .padding({ left: 6, right: 6, top: 2, bottom: 2 })
               .borderRadius(4)
           }
           Blank()
           if (this.card.canPlay) {
-            if (!this.card.isPlay) {
-              Image($r('app.media.ic_play'))
-                .width(20)
-                .height(20)
-                .margin({ right: 16, bottom: 5 })
-                .onClick(() => {
-                  tryCloseSideBar(this.getUIContext(), this.show, () => {
-                    this.card.isPlay = true
-                  });
-                })
-            } else {
-              Image($r('app.media.ic_paused'))
-                .width(16)
-                .height(16)
-                .margin({ right: 16, bottom: 5 })
-                .onClick(() => {
-                  tryCloseSideBar(this.getUIContext(), this.show, () => {
-                    this.card.isPlay = false
-                  });
-                })
-            }
+            Image($r(!this.card.isPlay ? 'app.media.ic_play' : 'app.media.ic_paused'))
+              .width(this.card.isPlay ? 16 : 20)
+              .height(this.card.isPlay ? 16 : 20)
+              .margin({ right: 16, bottom: 5 })
+              .onClick(() => {
+                tryCloseSideBar(this.getUIContext(), this.show, () => {
+                  this.card.isPlay = !this.card.isPlay
+                });
+              })
           }
         }
         .width('100%')
@@ -114,34 +101,22 @@ struct CardItem {
       .zIndex(1)
       .offset({ y: 30 })
 
-      // 内容
       Column() {
         Image(this.card.img)
           .width(120)
           .height(120)
-          .borderRadius({
-            topLeft: 12,
-            topRight: 12,
-          })
+          .borderRadius({ topLeft: 12, topRight: 12 })
 
         Column() {
           Text(this.card.subtitle)
             .fontSize(12)
             .fontColor($r('sys.color.white'))
         }
-        .padding({
-          top: 12,
-          left: 6,
-          right: 6,
-          bottom: 12,
-        })
+        .padding({ top: 12, left: 6, right: 6, bottom: 12 })
         .backgroundColor('#1d1d1f')
         .width(120)
         .height(40)
-        .borderRadius({
-          bottomLeft: 12,
-          bottomRight: 12,
-        })
+        .borderRadius({ bottomLeft: 12, bottomRight: 12 })
       }
     }
     .onClick(() => {
@@ -187,10 +162,7 @@ struct SongCardItem {
         .width(25)
         .height(25)
     }
-    .padding({
-      left: '23vp',
-      right: 3,
-    })
+    .padding({ left: '23vp', right: 3 })
     .width('88%')
   }
 }
@@ -200,14 +172,43 @@ struct SongCardItem {
 struct RecommendView {
   @State isRefreshing: boolean = false;
   @StorageLink('showSideBar') show: boolean = false;
-  @State loadedOne: boolean = false
-  @State loadedTwo: boolean = false
-  @State loadedThree: boolean = false
-  @State loadedFour: boolean = false
-  @State loadedFive: boolean = false
-  @State loadedSix: boolean = false
+  @State loadedBlockIndex: number = 0;
   @State private recommendCardDataSource: RecommendCardDateSource = new RecommendCardDateSource(recommendCardList);
   @State private songDataSource: SongDataSource = new SongDataSource(this.chunkSongs(songs, 3));
+
+  // 数据驱动的页面区块定义（减少重复代码）
+  private contentBlocks: ContentBlock[][] = [
+    [
+      { type: 'cardGrid', title: '雷达歌单>' },
+      { type: 'cardGrid', title: '排行榜>' },
+      { type: 'cardGrid', title: 'XX最近的热门歌曲' },
+    ],
+    [
+      { type: 'songTag', title: 'VIP专属好歌限时免费听>', tag: '免费听' },
+      { type: 'cardGrid', title: '从你喜欢的歌曲开始漫游' },
+      { type: 'cardGrid', title: 'XX的推荐歌单' },
+    ],
+    [
+      { type: 'titleOnly', title: '为你精选的音乐播客>' },
+      { type: 'titleOnly', title: '为你严选的精品有声书>' },
+      { type: 'titleOnly', title: '为你推荐的热门节目>' },
+    ],
+    [
+      { type: 'cardGrid', title: '从你喜欢的艺人开始漫游' },
+      { type: 'cardGrid', title: '场景歌单' },
+      { type: 'cardGrid', title: '你的专属推荐歌单' },
+    ],
+    [
+      { type: 'titleOnly', title: '电音风暴 二创狂欢' },
+      { type: 'titleOnly', title: '大家都爱听' },
+      { type: 'cardGrid', title: '为你精选的原创歌曲' },
+    ],
+    [
+      { type: 'cardGrid', title: '每周新热趋势' },
+      { type: 'cardGrid', title: '广播' },
+      { type: 'cardGrid', title: '影视原声' },
+    ],
+  ];
 
   private chunkSongs(data: songItemType[], size: number): songItemType[][] {
     let result: songItemType[][] = [];
@@ -219,7 +220,6 @@ struct RecommendView {
 
   private refresh() {
     this.isRefreshing = true;
-
     setTimeout(() => {
       this.isRefreshing = false;
       console.log('刷新完成');
@@ -267,12 +267,7 @@ struct RecommendView {
         .fontWeight(FontWeight.Bold)
     }
     .width('100%')
-    .padding({
-      left: '23vp',
-      right: 16,
-      top: 12,
-      bottom: 6
-    })
+    .padding({ left: '23vp', right: 16, top: 12, bottom: 6 })
   }
 
   @Builder
@@ -287,11 +282,69 @@ struct RecommendView {
     .justifyContent(FlexAlign.Center)
   }
 
+  @Builder
+  renderContentBlock(block: ContentBlock) {
+    if (block.type === 'cardGrid') {
+      Column() {
+        this.TitleBar(block.title)
+        this.cardList()
+      }
+    } else if (block.type === 'titleOnly') {
+      Column() {
+        Row() {
+          Text(block.title)
+            .fontSize(18)
+            .fontColor(Color.White)
+            .fontWeight(FontWeight.Bold)
+        }
+        .width('100%')
+        .padding({ left: '23vp', right: 16, top: 12, bottom: 6 })
+        this.songCardList();
+      }
+    } else if (block.type === 'songTag') {
+      Column() {
+        Row() {
+          Text(block.title)
+            .fontSize(18)
+            .fontColor(Color.White)
+            .fontWeight(FontWeight.Bold)
+          Text(block.tag!)
+            .fontSize(12)
+            .fontColor('#d8a0a0')
+            .backgroundColor('#332222')
+            .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+            .borderRadius(4)
+            .margin({ left: 8 })
+        }
+        .width('100%')
+        .padding({ left: '23vp', right: 16, top: 12, bottom: 6 })
+        this.songCardList();
+      }
+    }
+  }
+
+  @Builder
+  renderBlockGroup(groupIndex: number) {
+    Column() {
+      if (this.loadedBlockIndex > groupIndex) {
+        ForEach(this.contentBlocks[groupIndex], (block: ContentBlock) => {
+          this.renderContentBlock(block)
+        })
+      }
+    }
+    .onAppear(() => {
+      if (this.loadedBlockIndex <= groupIndex) {
+        this.loadedBlockIndex = groupIndex + 1;
+      }
+    })
+  }
+
   build() {
     Refresh({ refreshing: $$this.isRefreshing, builder: this.headerRefresh() }) {
       Scroll() {
         Column() {
           this.cardList()
+
           Column() {
             Row() {
               Text('猜你喜欢的「华语」好歌')
@@ -302,23 +355,12 @@ struct RecommendView {
                 .fontSize(12)
                 .fontColor('#d8a0a0')
                 .backgroundColor('#332222')
-                .padding({
-                  left: 6,
-                  right: 6,
-                  top: 2,
-                  bottom: 2
-                })
+                .padding({ left: 6, right: 6, top: 2, bottom: 2 })
                 .borderRadius(4)
                 .margin({ left: 8 })
             }
             .width('100%')
-            .padding({
-              left: '23vp',
-              right: 16,
-              top: 12,
-              bottom: 6
-            })
-
+            .padding({ left: '23vp', right: 16, top: 12, bottom: 6 })
             this.songCardList();
           }
 
@@ -327,233 +369,12 @@ struct RecommendView {
             this.cardList()
           }
 
-          // 第一块页面
-          Column() {
-            if (this.loadedOne) {
-              Column() {
-                this.TitleBar('雷达歌单>')
-                this.cardList()
-              }
-
-              Column() {
-                this.TitleBar('排行榜>')
-                this.cardList()
-              }
-
-              Column() {
-                this.TitleBar('XX最近的热门歌曲')
-                this.cardList()
-              }
-            }
-          }
-          .onAppear(() => {
-            this.loadedOne = true;
-          })
-
-          // 第二块页面
-          Column() {
-            if (this.loadedTwo) {
-              Column() {
-                Row() {
-                  Text('VIP专属好歌限时免费听>')
-                    .fontSize(18)
-                    .fontColor(Color.White)
-                    .fontWeight(FontWeight.Bold)
-                  Text('免费听')
-                    .fontSize(12)
-                    .fontColor('#d8a0a0')
-                    .backgroundColor('#332222')
-                    .padding({
-                      left: 6,
-                      right: 6,
-                      top: 2,
-                      bottom: 2
-                    })
-                    .borderRadius(4)
-                    .margin({ left: 8 })
-                }
-                .width('100%')
-                .padding({
-                  left: '23vp',
-                  right: 16,
-                  top: 12,
-                  bottom: 6
-                })
-
-                this.songCardList();
-              }
-
-              Column() {
-                this.TitleBar('从你喜欢的歌曲开始漫游')
-                this.cardList()
-              }
-
-              Column() {
-                this.TitleBar('XX的推荐歌单')
-                this.cardList()
-              }
-            }
-          }
-          .onAppear(() => {
-            this.loadedTwo = true;
-          })
-
-          // 第三块页面
-          Column() {
-            if (this.loadedThree) {
-              Column() {
-                Row() {
-                  Text('为你精选的音乐播客>')
-                    .fontSize(18)
-                    .fontColor(Color.White)
-                    .fontWeight(FontWeight.Bold)
-                }
-                .width('100%')
-                .padding({
-                  left: '23vp',
-                  right: 16,
-                  top: 12,
-                  bottom: 6
-                })
-
-                this.songCardList();
-              }
-
-              Column() {
-                Row() {
-                  Text('为你严选的精品有声书>')
-                    .fontSize(18)
-                    .fontColor(Color.White)
-                    .fontWeight(FontWeight.Bold)
-                }
-                .width('100%')
-                .padding({
-                  left: '23vp',
-                  right: 16,
-                  top: 12,
-                  bottom: 6
-                })
-
-                this.songCardList();
-              }
-
-              Column() {
-                Row() {
-                  Text('为你推荐的热门节目>')
-                    .fontSize(18)
-                    .fontColor(Color.White)
-                    .fontWeight(FontWeight.Bold)
-                }
-                .width('100%')
-                .padding({
-                  left: '23vp',
-                  right: 16,
-                  top: 12,
-                  bottom: 6
-                })
-
-                this.songCardList();
-              }
-            }
-          }
-          .onAppear(() => {
-            this.loadedThree = true;
-          })
-
-          // 第四块页面
-          Column() {
-            if (this.loadedFour) {
-              Column() {
-                this.TitleBar('从你喜欢的艺人开始漫游')
-                this.cardList()
-              }
-
-              Column() {
-                this.TitleBar('场景歌单')
-                this.cardList()
-              }
-
-              Column() {
-                this.TitleBar('你的专属推荐歌单')
-                this.cardList()
-              }
-            }
-          }
-          .onAppear(() => {
-            this.loadedFour = true;
-          })
-
-          // 第五块页面
-          Column() {
-            if (this.loadedFive) {
-              Column() {
-                Row() {
-                  Text('电音风暴 二创狂欢')
-                    .fontSize(18)
-                    .fontColor(Color.White)
-                    .fontWeight(FontWeight.Bold)
-                }
-                .width('100%')
-                .padding({
-                  left: '23vp',
-                  right: 16,
-                  top: 12,
-                  bottom: 6
-                })
-
-                this.songCardList();
-              }
-
-              Column() {
-                Row() {
-                  Text('大家都爱听')
-                    .fontSize(18)
-                    .fontColor(Color.White)
-                    .fontWeight(FontWeight.Bold)
-                }
-                .width('100%')
-                .padding({
-                  left: '23vp',
-                  right: 16,
-                  top: 12,
-                  bottom: 6
-                })
-
-                this.songCardList();
-              }
-
-              Column() {
-                this.TitleBar('为你精选的原创歌曲')
-                this.cardList()
-              }
-            }
-          }
-          .onAppear(() => {
-            this.loadedFive = true;
-          })
-
-          // 第六块页面
-          Column() {
-            if (this.loadedSix) {
-              Column() {
-                this.TitleBar('每周新热趋势')
-                this.cardList()
-              }
-
-              Column() {
-                this.TitleBar('广播')
-                this.cardList()
-              }
-
-              Column() {
-                this.TitleBar('影视原声')
-                this.cardList()
-              }
-            }
-          }
-          .onAppear(() => {
-            this.loadedSix = true;
-          })
+          this.renderBlockGroup(0)
+          this.renderBlockGroup(1)
+          this.renderBlockGroup(2)
+          this.renderBlockGroup(3)
+          this.renderBlockGroup(4)
+          this.renderBlockGroup(5)
 
           Blank()
             .height('20%')

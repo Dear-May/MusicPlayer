@@ -1,6 +1,6 @@
 {
   "modelVersion": "5.1.1",
-  "description": "Please describe the basic information.",
+  "description": "Music player application with recommendation, notes, and social features",
   "dependencies": {
   },
   "devDependencies": {

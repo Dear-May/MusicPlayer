@@ -2,11 +2,11 @@
   "string": [
     {
       "name": "module_desc",
-      "value": "module description"
+      "value": "Music player module"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "description"
+      "value": "Music playback and recommendation"
     },
     {
       "name": "EntryAbility_label",

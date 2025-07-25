@@ -15,7 +15,6 @@
     "pages/other/TimedShutdownPage",
     "pages/other/ShopPage",
     "pages/other/TicketPage",
-    "pages/other/RecommendSongPage",
-    "pages/TestPage"
+    "pages/other/RecommendSongPage"
   ]
 }

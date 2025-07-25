@@ -1,4 +1,4 @@
-import { changeSideBarShow, tryCloseSideBar } from '../../constants/GlobalFunction';
+import { changeSideBarShow, tryCloseSideBar, navigateToPage, navigateToSearch } from '../../utils/GlobalFunction';
 import { BasicDataSource } from '../../utils/BasicDataSource';
 import ListenBook from '../../views/recommend/ListenBook';
 import ListenFree from '../../views/recommend/ListenFree';
@@ -67,15 +67,7 @@ struct Recommend {
             .fontColor("#969290")
         }
         .onClick(() => {
-          this.getUIContext()
-            .getRouter()
-            .pushUrl({ url: 'pages/SearchPage', params: { source: 'IndexPage' } }, (err) => {
-              if (err) {
-                console.error('页面跳转失败', err);
-              } else {
-                console.info('页面跳转成功');
-              }
-            });
+          navigateToSearch(this.getUIContext(), this.show);
         })
 
         Image($r('app.media.ScanCode'))

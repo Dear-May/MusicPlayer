@@ -1,12 +1,13 @@
 import { CommonConstants } from "../../constants/CommonConstants";
 
-
 export class SectionsWaterFlowDataSource implements IDataSource {
   dataArray: number[] = [];
   private listeners: DataChangeListener[] = [];
+  private readonly initialCount: number = 20;
 
-  constructor() {
-    for (let i = 0; i < CommonConstants.REFRESH_COUNT; i++) {
+  constructor(count?: number) {
+    const size = count ?? this.initialCount;
+    for (let i = 0; i < size; i++) {
       this.dataArray.push(i);
     }
   }
@@ -98,8 +99,7 @@ export class SectionsWaterFlowDataSource implements IDataSource {
   }
 
   public reload(): void {
-    this.dataArray.splice(1, 1);
-    this.dataArray.splice(2, 1);
+    this.dataArray = [];
     this.notifyDataReload();
   }
 

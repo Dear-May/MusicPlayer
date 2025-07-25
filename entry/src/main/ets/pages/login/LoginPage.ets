@@ -396,7 +396,11 @@ struct LoginPage {
               .usingPopup(true) // 是否显示弹出框
               .font({ size: 16 })
               .onSelect((index: number) => {
-                this.listScroller.scrollToItemInGroup(index, 0)
+                try {
+                  this.listScroller.scrollToItemInGroup(index, 0)
+                } catch (error) {
+                  // TODO: Implement error handling.
+                }
               })
           }
           .borderRadius(20)

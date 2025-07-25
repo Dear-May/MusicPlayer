@@ -21,5 +21,5 @@ struct CreatePage {
 
 @Builder
 export function CreateBuilder(): void {
-  CreateBuilder();
+  CreatePage();
 }

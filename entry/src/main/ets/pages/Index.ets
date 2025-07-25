@@ -1,4 +1,4 @@
-import { changeSideBarShow, tryCloseSideBar } from '../constants/GlobalFunction';
+import { changeSideBarShow, tryCloseSideBar } from '../utils/GlobalFunction';
 import { SONG_KEY, tabsData } from '../constants/Index'
 import { TabClass } from '../models/Index';
 import { PlayStateType } from '../models/PlayState'

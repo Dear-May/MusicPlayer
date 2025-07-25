@@ -2,24 +2,41 @@ import { Context } from '@kit.AbilityKit'
 import { preferences } from '@kit.ArkData'
 import { PlayStateType } from '../models/PlayState'
 
+/**
+ * 歌曲状态管理器 - 使用preferences持久化播放状态
+ */
 export default class SongManager {
   static context: Context
 
+  private static readonly STORE_NAME: string = 'song_cache'
+  private static readonly SONG_KEY: string = 'song_cache_key'
+
   static getStore() {
     return preferences.getPreferencesSync(SongManager.context || getContext(), {
-      name: 'song_cache'
+      name: SongManager.STORE_NAME
     })
   }
 
-  // 更新音乐
+  // 更新音乐播放状态
   static async updateSong(song: string) {
-    const store = SongManager.getStore()
-    store.putSync('song_cache_key', song)
-    await store.flush()
+    try {
+      const store = SongManager.getStore()
+      store.putSync(SongManager.SONG_KEY, song)
+      await store.flush()
+    } catch (err) {
+      console.error('SongManager updateSong error:', JSON.stringify(err))
+    }
   }
 
-  static async getSong() {
-    const store = SongManager.getStore()
-    return JSON.parse(store.getSync('song_cache_key', JSON.stringify(new PlayStateType)) as string) as PlayStateType
+  // 获取音乐播放状态
+  static async getSong(): Promise<PlayStateType> {
+    try {
+      const store = SongManager.getStore()
+      const result = store.getSync(SongManager.SONG_KEY, JSON.stringify(new PlayStateType())) as string
+      return JSON.parse(result) as PlayStateType
+    } catch (err) {
+      console.error('SongManager getSong error:', JSON.stringify(err))
+      return new PlayStateType()
+    }
   }
 }
