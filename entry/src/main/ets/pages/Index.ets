@@ -36,7 +36,7 @@ struct RecommendView {
           .borderRadius(12.5)
           .rotate({ angle: this.rotateAngle })
           .animation({
-            duration: 3500,
+            duration: 5000,
             curve: Curve.Linear,
             iterations: -1,
             expectedFrameRateRange: {
@@ -146,7 +146,7 @@ struct RecommendView {
               TabContent() {
                 if (item.name === 'recommend') {
                   Recommend()
-                } else if (item.name === 'find') {
+                } else if (item.name === 'roam') {
                   // Find()
                 } else if (item.name === 'note') {
                   Note()
@@ -160,6 +160,7 @@ struct RecommendView {
               .backgroundColor($r('sys.color.white'))
             })
           }
+          .scrollable(false)
           .barHeight(100)
           .onChange(index => {
             this.currentName = tabsData[index].name
