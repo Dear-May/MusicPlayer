@@ -2,8 +2,160 @@ import { recommendCardType, songItemType } from '../../models/Music'
 import { recommendCardList, songs } from '../../constants/MusicConstants'
 import { tryCloseSideBar } from '../../constants/GlobalFunction';
 
+@Reusable
+struct CardItem {
+  @Prop card: recommendCardType
+  @StorageLink('showSideBar') show: boolean = false;
 
-@Entry
+  build() {
+    Stack() {
+      //标题
+      Row() {
+        if (this.card.icon) {
+          Image(this.card.icon)
+            .width(16)
+            .height(16)
+            .margin({ right: 5 })
+        }
+        Text(this.card.title)
+          .fontSize(16)
+          .fontColor($r('sys.color.white'))
+          .fontWeight(FontWeight.Bold)
+      }
+      .width(120)
+      .margin({ left: 16 })
+      .justifyContent(FlexAlign.Start)
+      .zIndex(1)
+      .offset({ y: -60 })
+
+      //标题
+      Row() {
+        Row() {
+          if (this.card.tag) {
+            Text(this.card.tag)
+              .fontSize(8)
+              .fontColor($r('sys.color.white'))
+              .backgroundColor('#33333380')
+              .padding({
+                left: 6,
+                right: 6,
+                top: 2,
+                bottom: 2
+              })
+              .borderRadius(4)
+          }
+          Blank()
+          if (this.card.canPlay) {
+            if (!this.card.isPlay) {
+              Image($r('app.media.ic_play'))
+                .width(20)
+                .height(20)
+                .margin({ right: 16, bottom: 5 })
+                .onClick(() => {
+                  this.card.isPlay = true
+                })
+            } else {
+              Image($r('app.media.ic_paused'))
+                .width(16)
+                .height(16)
+                .margin({ right: 5, bottom: 5 })
+                .onClick(() => {
+                  this.card.isPlay = false
+                })
+            }
+          }
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.SpaceBetween)
+      }
+      .width(120)
+      .margin({ left: 16 })
+      .justifyContent(FlexAlign.Start)
+      .zIndex(1)
+      .offset({ y: 30 })
+
+      // 内容
+      Column() {
+        Image(this.card.img)
+          .width(120)
+          .height(120)
+          .borderRadius({
+            topLeft: 12,
+            topRight: 12,
+          })
+
+        Column() {
+          Text(this.card.subtitle)
+            .fontSize(12)
+            .fontColor($r('sys.color.white'))
+        }
+        .padding({
+          top: 12,
+          left: 6,
+          right: 6,
+          bottom: 12,
+        })
+        .backgroundColor('#1d1d1f')
+        .width(120)
+        .height(40)
+        .borderRadius({
+          bottomLeft: 12,
+          bottomRight: 12,
+        })
+      }
+    }
+    .onClick(() => {
+      tryCloseSideBar(this.getUIContext(), this.show, () => {
+        console.log('点击了歌单');
+      })
+    })
+    .width(140)
+  }
+}
+
+@Reusable
+struct SongCardItem {
+  @Prop song: songItemType
+  @StorageLink('showSideBar') show: boolean = false;
+
+  build() {
+    Row() {
+      Image(this.song.img)
+        .width(70)
+        .height(70)
+        .borderRadius(4)
+      Column({ space: 10 }) {
+        Text(this.song.name)
+          .fontSize(18)
+          .fontColor(Color.White)
+          .fontWeight(FontWeight.Bold)
+        Row() {
+          if (this.song.tag) {
+            Text(this.song.tag)
+              .fontSize(10)
+              .fontColor('#ff4a4a')
+              .margin({ right: 6 })
+          }
+          Text(this.song.author).fontSize(12).fontColor('#888888')
+        }
+      }
+      .alignItems(HorizontalAlign.Start)
+      .margin({ left: 10 })
+      .layoutWeight(1)
+
+      Image($r('app.media.ic_play'))
+        .width(25)
+        .height(25)
+    }
+    .padding({
+      left: '23vp',
+      right: 3,
+    })
+    .width('88%')
+  }
+}
+
+@Preview
 @Component
 struct RecommendView {
   @StorageLink('showSideBar') show: boolean = false;
@@ -27,108 +179,7 @@ struct RecommendView {
     Scroll() {
       Row({ space: 12 }) {
         ForEach(recommendCardList, (card: recommendCardType) => {
-          Stack() {
-            //标题
-            Row() {
-              if (card.icon) {
-                Image(card.icon)
-                  .width(16)
-                  .height(16)
-                  .margin({ right: 5 })
-              }
-              Text(card.title)
-                .fontSize(16)
-                .fontColor($r('sys.color.white'))
-                .fontWeight(FontWeight.Bold)
-            }
-            .width(120)
-            .margin({ left: 16 })
-            .justifyContent(FlexAlign.Start)
-            .zIndex(1)
-            .offset({ y: -60 })
-
-            //标题
-            Row() {
-              Row() {
-                if (card.tag) {
-                  Text(card.tag)
-                    .fontSize(8)
-                    .fontColor($r('sys.color.white'))
-                    .backgroundColor('#33333380')
-                    .padding({
-                      left: 6,
-                      right: 6,
-                      top: 2,
-                      bottom: 2
-                    })
-                    .borderRadius(4)
-                }
-                Blank()
-                if (card.canPlay) {
-                  if (!card.isPlay) {
-                    Image($r('app.media.ic_play'))
-                      .width(20)
-                      .height(20)
-                      .margin({ right: 16, bottom: 5 })
-                      .onClick(() => {
-                        card.isPlay = true
-                      })
-                  } else {
-                    Image($r('app.media.ic_paused'))
-                      .width(16)
-                      .height(16)
-                      .margin({ right: 5, bottom: 5 })
-                      .onClick(() => {
-                        card.isPlay = false
-                      })
-                  }
-                }
-              }
-              .width('100%')
-              .justifyContent(FlexAlign.SpaceBetween)
-            }
-            .width(120)
-            .margin({ left: 16 })
-            .justifyContent(FlexAlign.Start)
-            .zIndex(1)
-            .offset({ y: 30 })
-
-            // 内容
-            Column() {
-              Image(card.img)
-                .width(120)
-                .height(120)
-                .borderRadius({
-                  topLeft: 12,
-                  topRight: 12,
-                })
-
-              Column() {
-                Text(card.subtitle)
-                  .fontSize(12)
-                  .fontColor($r('sys.color.white'))
-              }
-              .padding({
-                top: 12,
-                left: 6,
-                right: 6,
-                bottom: 12,
-              })
-              .backgroundColor('#1d1d1f')
-              .width(120)
-              .height(40)
-              .borderRadius({
-                bottomLeft: 12,
-                bottomRight: 12,
-              })
-            }
-          }
-          .onClick(() => {
-            tryCloseSideBar(this.getUIContext(), this.show, () => {
-              console.log('点击了歌单');
-            })
-          })
-          .width(140)
+          CardItem({ card: card })
         })
       }
       .padding({ left: 16 })
@@ -136,6 +187,23 @@ struct RecommendView {
     .padding({ top: 16 })
     .scrollBar(BarState.Off)
     .scrollable(ScrollDirection.Horizontal)
+  }
+
+  @Builder
+  songCardList() {
+    Scroll() {
+      Row() {
+        ForEach(this.chunkSongs(songs, 3), (group: songItemType[]) => {
+          Column({ space: 0 }) {
+            ForEach(group, (song: songItemType) => {
+              SongCardItem({ song: song })
+            })
+          }
+        })
+      }
+    }
+    .scrollable(ScrollDirection.Horizontal)
+    .scrollBar(BarState.Off)
   }
 
   @Builder
@@ -186,51 +254,7 @@ struct RecommendView {
             bottom: 6
           })
 
-          Scroll() {
-            Row() {
-              ForEach(this.chunkSongs(songs, 3), (group: songItemType[]) => {
-                Column({ space: 0 }) {
-                  ForEach(group, (song: songItemType) => {
-                    Row() {
-                      Image(song.img)
-                        .width(70)
-                        .height(70)
-                        .borderRadius(4)
-                      Column({ space: 10 }) {
-                        Text(song.name)
-                          .fontSize(18)
-                          .fontColor(Color.White)
-                          .fontWeight(FontWeight.Bold)
-                        Row() {
-                          if (song.tag) {
-                            Text(song.tag)
-                              .fontSize(10)
-                              .fontColor('#ff4a4a')
-                              .margin({ right: 6 })
-                          }
-                          Text(song.author).fontSize(12).fontColor('#888888')
-                        }
-                      }
-                      .alignItems(HorizontalAlign.Start)
-                      .margin({ left: 10 })
-                      .layoutWeight(1)
-
-                      Image($r('app.media.ic_play'))
-                        .width(25)
-                        .height(25)
-                    }
-                    .padding({
-                      left: '23vp',
-                      right: 3,
-                    })
-                    .width('88%')
-                  })
-                }
-              })
-            }
-          }
-          .scrollable(ScrollDirection.Horizontal)
-          .scrollBar(BarState.Off)
+          this.songCardList();
         }
 
         Column() {
@@ -291,51 +315,7 @@ struct RecommendView {
                 bottom: 6
               })
 
-              Scroll() {
-                Row() {
-                  ForEach(this.chunkSongs(songs, 3), (group: songItemType[]) => {
-                    Column({ space: 0 }) {
-                      ForEach(group, (song: songItemType) => {
-                        Row() {
-                          Image(song.img)
-                            .width(70)
-                            .height(70)
-                            .borderRadius(4)
-                          Column({ space: 10 }) {
-                            Text(song.name)
-                              .fontSize(18)
-                              .fontColor(Color.White)
-                              .fontWeight(FontWeight.Bold)
-                            Row() {
-                              if (song.tag) {
-                                Text(song.tag)
-                                  .fontSize(10)
-                                  .fontColor('#ff4a4a')
-                                  .margin({ right: 6 })
-                              }
-                              Text(song.author).fontSize(12).fontColor('#888888')
-                            }
-                          }
-                          .alignItems(HorizontalAlign.Start)
-                          .margin({ left: 10 })
-                          .layoutWeight(1)
-
-                          Image($r('app.media.ic_play'))
-                            .width(25)
-                            .height(25)
-                        }
-                        .padding({
-                          left: '23vp',
-                          right: 3,
-                        })
-                        .width('88%')
-                      })
-                    }
-                  })
-                }
-              }
-              .scrollable(ScrollDirection.Horizontal)
-              .scrollBar(BarState.Off)
+              this.songCardList();
             }
 
             Column() {
@@ -371,51 +351,7 @@ struct RecommendView {
                 bottom: 6
               })
 
-              Scroll() {
-                Row() {
-                  ForEach(this.chunkSongs(songs, 3), (group: songItemType[]) => {
-                    Column({ space: 0 }) {
-                      ForEach(group, (song: songItemType) => {
-                        Row() {
-                          Image(song.img)
-                            .width(70)
-                            .height(70)
-                            .borderRadius(4)
-                          Column({ space: 10 }) {
-                            Text(song.name)
-                              .fontSize(18)
-                              .fontColor(Color.White)
-                              .fontWeight(FontWeight.Bold)
-                            Row() {
-                              if (song.tag) {
-                                Text(song.tag)
-                                  .fontSize(10)
-                                  .fontColor('#ff4a4a')
-                                  .margin({ right: 6 })
-                              }
-                              Text(song.author).fontSize(12).fontColor('#888888')
-                            }
-                          }
-                          .alignItems(HorizontalAlign.Start)
-                          .margin({ left: 10 })
-                          .layoutWeight(1)
-
-                          Image($r('app.media.ic_play'))
-                            .width(25)
-                            .height(25)
-                        }
-                        .padding({
-                          left: '23vp',
-                          right: 3,
-                        })
-                        .width('88%')
-                      })
-                    }
-                  })
-                }
-              }
-              .scrollable(ScrollDirection.Horizontal)
-              .scrollBar(BarState.Off)
+              this.songCardList();
             }
 
             Column() {
@@ -433,51 +369,7 @@ struct RecommendView {
                 bottom: 6
               })
 
-              Scroll() {
-                Row() {
-                  ForEach(this.chunkSongs(songs, 3), (group: songItemType[]) => {
-                    Column({ space: 0 }) {
-                      ForEach(group, (song: songItemType) => {
-                        Row() {
-                          Image(song.img)
-                            .width(70)
-                            .height(70)
-                            .borderRadius(4)
-                          Column({ space: 10 }) {
-                            Text(song.name)
-                              .fontSize(18)
-                              .fontColor(Color.White)
-                              .fontWeight(FontWeight.Bold)
-                            Row() {
-                              if (song.tag) {
-                                Text(song.tag)
-                                  .fontSize(10)
-                                  .fontColor('#ff4a4a')
-                                  .margin({ right: 6 })
-                              }
-                              Text(song.author).fontSize(12).fontColor('#888888')
-                            }
-                          }
-                          .alignItems(HorizontalAlign.Start)
-                          .margin({ left: 10 })
-                          .layoutWeight(1)
-
-                          Image($r('app.media.ic_play'))
-                            .width(25)
-                            .height(25)
-                        }
-                        .padding({
-                          left: '23vp',
-                          right: 3,
-                        })
-                        .width('88%')
-                      })
-                    }
-                  })
-                }
-              }
-              .scrollable(ScrollDirection.Horizontal)
-              .scrollBar(BarState.Off)
+              this.songCardList();
             }
 
             Column() {
@@ -495,51 +387,7 @@ struct RecommendView {
                 bottom: 6
               })
 
-              Scroll() {
-                Row() {
-                  ForEach(this.chunkSongs(songs, 3), (group: songItemType[]) => {
-                    Column({ space: 0 }) {
-                      ForEach(group, (song: songItemType) => {
-                        Row() {
-                          Image(song.img)
-                            .width(70)
-                            .height(70)
-                            .borderRadius(4)
-                          Column({ space: 10 }) {
-                            Text(song.name)
-                              .fontSize(18)
-                              .fontColor(Color.White)
-                              .fontWeight(FontWeight.Bold)
-                            Row() {
-                              if (song.tag) {
-                                Text(song.tag)
-                                  .fontSize(10)
-                                  .fontColor('#ff4a4a')
-                                  .margin({ right: 6 })
-                              }
-                              Text(song.author).fontSize(12).fontColor('#888888')
-                            }
-                          }
-                          .alignItems(HorizontalAlign.Start)
-                          .margin({ left: 10 })
-                          .layoutWeight(1)
-
-                          Image($r('app.media.ic_play'))
-                            .width(25)
-                            .height(25)
-                        }
-                        .padding({
-                          left: '23vp',
-                          right: 3,
-                        })
-                        .width('88%')
-                      })
-                    }
-                  })
-                }
-              }
-              .scrollable(ScrollDirection.Horizontal)
-              .scrollBar(BarState.Off)
+              this.songCardList();
             }
           }
         }
@@ -588,51 +436,7 @@ struct RecommendView {
                 bottom: 6
               })
 
-              Scroll() {
-                Row() {
-                  ForEach(this.chunkSongs(songs, 3), (group: songItemType[]) => {
-                    Column({ space: 0 }) {
-                      ForEach(group, (song: songItemType) => {
-                        Row() {
-                          Image(song.img)
-                            .width(70)
-                            .height(70)
-                            .borderRadius(4)
-                          Column({ space: 10 }) {
-                            Text(song.name)
-                              .fontSize(18)
-                              .fontColor(Color.White)
-                              .fontWeight(FontWeight.Bold)
-                            Row() {
-                              if (song.tag) {
-                                Text(song.tag)
-                                  .fontSize(10)
-                                  .fontColor('#ff4a4a')
-                                  .margin({ right: 6 })
-                              }
-                              Text(song.author).fontSize(12).fontColor('#888888')
-                            }
-                          }
-                          .alignItems(HorizontalAlign.Start)
-                          .margin({ left: 10 })
-                          .layoutWeight(1)
-
-                          Image($r('app.media.ic_play'))
-                            .width(25)
-                            .height(25)
-                        }
-                        .padding({
-                          left: '23vp',
-                          right: 3,
-                        })
-                        .width('88%')
-                      })
-                    }
-                  })
-                }
-              }
-              .scrollable(ScrollDirection.Horizontal)
-              .scrollBar(BarState.Off)
+              this.songCardList();
             }
 
             Column() {
@@ -650,51 +454,7 @@ struct RecommendView {
                 bottom: 6
               })
 
-              Scroll() {
-                Row() {
-                  ForEach(this.chunkSongs(songs, 3), (group: songItemType[]) => {
-                    Column({ space: 0 }) {
-                      ForEach(group, (song: songItemType) => {
-                        Row() {
-                          Image(song.img)
-                            .width(70)
-                            .height(70)
-                            .borderRadius(4)
-                          Column({ space: 10 }) {
-                            Text(song.name)
-                              .fontSize(18)
-                              .fontColor(Color.White)
-                              .fontWeight(FontWeight.Bold)
-                            Row() {
-                              if (song.tag) {
-                                Text(song.tag)
-                                  .fontSize(10)
-                                  .fontColor('#ff4a4a')
-                                  .margin({ right: 6 })
-                              }
-                              Text(song.author).fontSize(12).fontColor('#888888')
-                            }
-                          }
-                          .alignItems(HorizontalAlign.Start)
-                          .margin({ left: 10 })
-                          .layoutWeight(1)
-
-                          Image($r('app.media.ic_play'))
-                            .width(25)
-                            .height(25)
-                        }
-                        .padding({
-                          left: '23vp',
-                          right: 3,
-                        })
-                        .width('88%')
-                      })
-                    }
-                  })
-                }
-              }
-              .scrollable(ScrollDirection.Horizontal)
-              .scrollBar(BarState.Off)
+              this.songCardList();
             }
 
             Column() {

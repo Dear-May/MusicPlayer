@@ -1,5 +1,5 @@
 import componentUtils from '@ohos.arkui.componentUtils';
-import { changeSideBarShow, tryCloseSideBar } from '../../constants/GlobalFunction';
+import { tryCloseSideBar } from '../../constants/GlobalFunction';
 import RecommendView from '../../views/note/RecommendView';
 
 @Entry
@@ -14,6 +14,60 @@ struct Note {
   @State indicatorLeftMargin: number = 0
   @State indicatorWidth: number = 0
   private tabsWidth: number = 0
+
+  // 获取组件大小、位置、平移缩放旋转及仿射矩阵属性信息。
+  private getTextInfo(index: number): Record<string, number> {
+    let modePosition: componentUtils.ComponentInfo = componentUtils.getRectangleById('tab' + index.toString());
+    if (!modePosition) {
+      // 处理组件未找到的情况，返回默认值或抛出异常
+      console.error('组件未找到');
+      return { 'left': 0, 'width': 0 };
+    }
+    // 检查必要的属性是否存在
+    if (!modePosition.windowOffset || !modePosition.size) {
+      // 处理组件信息不完整的情况
+      console.error('组件信息不完整');
+      return { 'left': 0, 'width': 0 };
+    }
+    const px2vp = (px: number) => {
+      return px / 750 * 100;
+    };
+    const left = px2vp(modePosition.windowOffset.x);
+    const width = px2vp(modePosition.size.width);
+    return { 'left': left, 'width': width };
+
+  }
+
+  private getCurrentIndicatorInfo(index: number, event: TabsAnimationEvent): Record<string, number> {
+    let nextIndex = index
+    if (index > 0 && event.currentOffset > 0) {
+      nextIndex--
+    } else if (index < 3 && event.currentOffset < 0) {
+      nextIndex++
+    }
+    let indexInfo = this.getTextInfo(index)
+    let nextIndexInfo = this.getTextInfo(nextIndex)
+    let swipeRatio = Math.abs(event.currentOffset / this.tabsWidth)
+    let currentIndex = swipeRatio > 0.5 ? nextIndex : index // 页面滑动超过一半，tabBar切换到下一页。
+    let currentLeft = indexInfo.left + (nextIndexInfo.left - indexInfo.left) * swipeRatio
+    let currentWidth = indexInfo.width + (nextIndexInfo.width - indexInfo.width) * swipeRatio
+    return { 'index': currentIndex, 'left': currentLeft, 'width': currentWidth }
+  }
+
+  private startAnimateTo(duration: number, leftMargin: number, width: number) {
+    this.getUIContext().animateTo({
+      duration: duration, // 动画时长
+      curve: Curve.Linear, // 动画曲线
+      iterations: 1, // 播放次数
+      playMode: PlayMode.Normal, // 动画模式
+      onFinish: () => {
+        console.info('play end')
+      }
+    }, () => {
+      this.indicatorLeftMargin = leftMargin
+      this.indicatorWidth = width
+    })
+  }
 
   // 单独的页签
   @Builder
@@ -180,60 +234,6 @@ struct Note {
     .width('100%')
     .height('100%')
     .backgroundColor('#0e0d11')
-  }
-
-  // 获取组件大小、位置、平移缩放旋转及仿射矩阵属性信息。
-  private getTextInfo(index: number): Record<string, number> {
-    let modePosition: componentUtils.ComponentInfo = componentUtils.getRectangleById('tab' + index.toString());
-    if (!modePosition) {
-      // 处理组件未找到的情况，返回默认值或抛出异常
-      console.error('组件未找到');
-      return { 'left': 0, 'width': 0 };
-    }
-    // 检查必要的属性是否存在
-    if (!modePosition.windowOffset || !modePosition.size) {
-      // 处理组件信息不完整的情况
-      console.error('组件信息不完整');
-      return { 'left': 0, 'width': 0 };
-    }
-    const px2vp = (px: number) => {
-      return px / 750 * 100;
-    };
-    const left = px2vp(modePosition.windowOffset.x);
-    const width = px2vp(modePosition.size.width);
-    return { 'left': left, 'width': width };
-
-  }
-
-  private getCurrentIndicatorInfo(index: number, event: TabsAnimationEvent): Record<string, number> {
-    let nextIndex = index
-    if (index > 0 && event.currentOffset > 0) {
-      nextIndex--
-    } else if (index < 3 && event.currentOffset < 0) {
-      nextIndex++
-    }
-    let indexInfo = this.getTextInfo(index)
-    let nextIndexInfo = this.getTextInfo(nextIndex)
-    let swipeRatio = Math.abs(event.currentOffset / this.tabsWidth)
-    let currentIndex = swipeRatio > 0.5 ? nextIndex : index // 页面滑动超过一半，tabBar切换到下一页。
-    let currentLeft = indexInfo.left + (nextIndexInfo.left - indexInfo.left) * swipeRatio
-    let currentWidth = indexInfo.width + (nextIndexInfo.width - indexInfo.width) * swipeRatio
-    return { 'index': currentIndex, 'left': currentLeft, 'width': currentWidth }
-  }
-
-  private startAnimateTo(duration: number, leftMargin: number, width: number) {
-    this.getUIContext().animateTo({
-      duration: duration, // 动画时长
-      curve: Curve.Linear, // 动画曲线
-      iterations: 1, // 播放次数
-      playMode: PlayMode.Normal, // 动画模式
-      onFinish: () => {
-        console.info('play end')
-      }
-    }, () => {
-      this.indicatorLeftMargin = leftMargin
-      this.indicatorWidth = width
-    })
   }
 }
 

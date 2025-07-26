@@ -1,4 +1,4 @@
-@Entry
+@Preview
 @Component
 struct DrawerTab {
   @State navList: Array<number> = [0, 1, 2, 3, 4, 5];

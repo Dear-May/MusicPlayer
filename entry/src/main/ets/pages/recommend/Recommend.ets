@@ -23,7 +23,7 @@ class TabsDateSource extends BasicDataSource<string> {
   }
 }
 
-@Entry
+@Preview
 @Component
 struct Recommend {
   @StorageLink('showSideBar') show: boolean = false;
