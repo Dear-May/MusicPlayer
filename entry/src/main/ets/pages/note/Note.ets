@@ -1,5 +1,5 @@
 import componentUtils from '@ohos.arkui.componentUtils';
-import { tryCloseSideBar } from '../../constants/GlobalFunction';
+import { changeSideBarShow, tryCloseSideBar } from '../../constants/GlobalFunction';
 import RecommendView from '../../views/note/RecommendView';
 
 @Entry
@@ -101,10 +101,22 @@ struct Note {
   }
 
   @Builder
+  SideBarControllerButton() {
+    Image($r('app.media.menu'))
+      .width(24)
+      .height(24)
+      .margin({ right: 5 })
+      .onClick(() => {
+        changeSideBarShow(this.getUIContext())
+      })
+  }
+
+  @Builder
   TopBar() {
     Stack({ alignContent: Alignment.TopStart }) {
       Row() {
         Row() {
+          this.SideBarControllerButton()
         }
         .width('25%')
 

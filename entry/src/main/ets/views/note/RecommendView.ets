@@ -11,50 +11,30 @@ struct NoteCardItem {
   }
 
   build() {
-    RelativeContainer() {
-      Image($rawfile(`sections/${this.item % 4}.jpg`))
-        .objectFit(ImageFit.Cover)
+    Column() {
+      Image('images/note/note_1.jpg')
         .width(CommonConstants.FULL_WIDTH)
-        .layoutWeight(1)
-        .borderRadius(8)
-        .alignRules({
-          top: { anchor: '__container__', align: VerticalAlign.Top },
-          bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-          left: { anchor: '__container__', align: HorizontalAlign.Start },
-          right: { anchor: '__container__', align: HorizontalAlign.End }
-        })
-        .id('image1')
+        .objectFit(ImageFit.Cover)
 
-      Stack() {
+      Column() {
+        Row({ space: 8 }) {
+          Image($r('app.media.ic_musicalNote'))
+            .width(16)
+            .height(16)
+
+          Text('叹云兮')
+            .fontColor(Color.White)
+
+        }
+        .width(CommonConstants.INDEX_CONTENT_WIDTH)
+        .justifyContent(FlexAlign.Start)
+
+        Text('鞠婧祎我讨厌你报喜不报忧这首歌真的很好听，旋律优美，歌词感人，推荐大家都去听听')
+          .fontColor(Color.White)
+          .fontSize(12)
+          .maxLines(2) // 限制最多2行
+          .textOverflow({ overflow: TextOverflow.Ellipsis }) // 超出省略
       }
-      .linearGradient({
-        angle: 0,
-        colors: [['#80000000', 0.0],
-          ['#03000000', 1.0]]
-      })
-      .width(CommonConstants.FULL_WIDTH)
-      .height(32)
-      .borderRadius(8)
-      .hitTestBehavior(HitTestMode.None)
-      .alignRules({
-        bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-        left: { anchor: '__container__', align: HorizontalAlign.Start },
-        right: { anchor: '__container__', align: HorizontalAlign.End }
-      })
-      .id('mask1')
-
-      Text('NO. ' + (this.item + 1))
-        .fontSize(12)
-        .fontColor(Color.White)
-        .alignRules({
-          bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-          left: { anchor: '__container__', align: HorizontalAlign.Start }
-        })
-        .margin({
-          left: 8,
-          bottom: 4
-        })
-        .id('text1')
     }
     .width(CommonConstants.FULL_WIDTH)
     .borderRadius(8)
@@ -221,27 +201,7 @@ struct RecommendView {
         WaterFlow({ scroller: this.scroller, sections: this.sections }) {
           LazyForEach(this.dataSource, (item: number) => {
             FlowItem() {
-              Stack() {
-                Row() {
-                  Button('delete')
-                    .fontColor(Color.Red)
-                    .backgroundColor(Color.White)
-                    .onClick(() => {
-                      this.getUIContext().animateTo({ duration: CommonConstants.DELETE_ANIMATION_TIME }, () => {
-                        this.removeItem(item);
-                      });
-                    })
-                }
-                .width(CommonConstants.FULL_WIDTH)
-                .height(CommonConstants.FULL_HEIGHT)
-                .borderRadius(8)
-                .justifyContent(FlexAlign.Center)
-                .zIndex(1)
-                .visibility(this.currentItem === item ? Visibility.Visible : Visibility.Hidden)
-                .backgroundColor($r('sys.color.mask_fourth'))
-
-                NoteCardItem({ item: item })
-              }
+              NoteCardItem({ item: item })
             }
             .transition({ type: TransitionType.Delete, opacity: 0 })
             .priorityGesture(LongPressGesture()

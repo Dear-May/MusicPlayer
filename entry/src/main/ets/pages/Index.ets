@@ -195,16 +195,7 @@ struct RecommendView {
       .overlay(this.OverlayNode())
     }
     .showSideBar(this.show)
-    .controlButton({
-      left: 14,
-      top: 47,
-      height: 24,
-      width: 24,
-      icons: {
-        shown: $r('app.media.menu'),
-        hidden: $r('app.media.menu')
-      }
-    })
+    .showControlButton(false)
     .onChange((value: boolean) => {
       this.show = value;
     })

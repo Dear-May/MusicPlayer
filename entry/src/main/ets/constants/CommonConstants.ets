@@ -97,11 +97,11 @@ export class CommonConstants {
   /**
    * The min height of flow item.
    */
-  static readonly FLOW_ITEM_MIN_HEIGHT: number = 80;
+  static readonly FLOW_ITEM_MIN_HEIGHT: number = 250;
   /**
    * The max height of flow item.
    */
-  static readonly FLOW_ITEM_MAX_HEIGHT: number = 180;
+  static readonly FLOW_ITEM_MAX_HEIGHT: number = 350;
   /**
    * The max height of flow item.
    */

@@ -1,4 +1,4 @@
-import { changeSideBarShow } from '../../constants/GlobalFunction';
+import { changeSideBarShow, tryCloseSideBar } from '../../constants/GlobalFunction';
 import { BasicDataSource } from '../../utils/BasicDataSource';
 import ListenBook from '../../views/recommend/ListenBook';
 import ListenFree from '../../views/recommend/ListenFree';
@@ -23,6 +23,7 @@ class TabsDateSource extends BasicDataSource<string> {
   }
 }
 
+
 @Preview
 @Component
 struct Recommend {
@@ -37,8 +38,21 @@ struct Recommend {
   private tabsController: TabsController = new TabsController();
 
   @Builder
+  SideBarControllerButton() {
+    Image($r('app.media.menu'))
+      .width(24)
+      .height(24)
+      .margin({ right: 5 })
+      .onClick(() => {
+        changeSideBarShow(this.getUIContext())
+      })
+  }
+
+  @Builder
   TopBar() {
     Row() {
+      this.SideBarControllerButton()
+
       Row({ space: 5 }) {
         Row({ space: 0 }) {
           Image($r('app.media.search'))
@@ -75,7 +89,7 @@ struct Recommend {
       .height(38)
       .width('80%')
       .padding(10)
-      .margin({ left: 35 })
+      .margin({ left: 6 })
       .backgroundColor('rgba(117, 116, 116, 0.35)')
       .borderRadius(24)
 
