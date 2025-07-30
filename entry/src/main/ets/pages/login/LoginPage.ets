@@ -256,9 +256,9 @@ struct LoginPage {
           .strokeWidth(2)
         // 选项
         Column({ space: 20 }) {
-          this.problemChoose('手机号已更换', 'pages/AccountRecoveryPage')
-          this.problemChoose('找回原账号', 'pages/AccountRecoveryPage')
-          this.problemChoose('其他问题', 'pages/CustomerServicePage')
+          this.problemChoose('手机号已更换', 'pages/other/AccountRecoveryPage')
+          this.problemChoose('找回原账号', 'pages/other/AccountRecoveryPage')
+          this.problemChoose('其他问题', 'pages/other/CustomerServicePage')
         }
         .alignItems(HorizontalAlign.Start)
       }

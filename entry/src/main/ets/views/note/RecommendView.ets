@@ -187,7 +187,7 @@ struct RecommendView {
   headerRefresh() {
     Column() {
       LoadingProgress()
-        .color(Color.Black)
+        .color(Color.White)
         .opacity(0.6)
         .width('36vp')
         .height('36vp')

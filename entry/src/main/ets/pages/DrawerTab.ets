@@ -5,6 +5,18 @@ import { CommonConstants } from '../constants/CommonConstants';
 struct DrawerTab {
   @State active: number = 0;
 
+  private RouterPage(url: string) {
+    this.getUIContext()
+      .getRouter()
+      .replaceUrl({ url: url, params: { source: 'IndexPage' } }, (err) => {
+        if (err) {
+          console.error('页面跳转失败', err);
+        } else {
+          console.info('页面跳转成功');
+        }
+      });
+  }
+
   // 顶部登录区域
   @Builder
   TopBar() {
@@ -20,15 +32,7 @@ struct DrawerTab {
           .fontWeight(FontWeight.Medium)
           .margin({ left: 17 })
           .onClick(() => {
-            this.getUIContext()
-              .getRouter()
-              .replaceUrl({ url: 'pages/login/LoginPage', params: { source: 'IndexPage' } }, (err) => {
-                if (err) {
-                  console.error('页面跳转失败', err);
-                } else {
-                  console.info('页面跳转成功');
-                }
-              });
+            this.RouterPage('pages/login/LoginPage');
           })
       }
       .layoutWeight(1)
@@ -153,7 +157,7 @@ struct DrawerTab {
 
   // 菜单项构造器
   @Builder
-  menuItem(icon: Resource, label: string, desc?: string) {
+  menuItem(icon: Resource, label: string, url: string, desc?: string) {
     Row() {
       Row() {
         Image(icon)
@@ -164,17 +168,6 @@ struct DrawerTab {
           .fontColor(Color.White)
           .fontWeight(FontWeight.Medium)
           .margin({ left: 17 })
-          .onClick(() => {
-            this.getUIContext()
-              .getRouter()
-              .replaceUrl({ url: 'pages/login/LoginPage', params: { source: 'IndexPage' } }, (err) => {
-                if (err) {
-                  console.error('页面跳转失败', err);
-                } else {
-                  console.info('页面跳转成功');
-                }
-              });
-          })
       }
       .layoutWeight(1)
 
@@ -187,6 +180,9 @@ struct DrawerTab {
       .justifyContent(FlexAlign.End)
 
     }
+    .onClick(() => {
+      this.RouterPage('pages/other/' + url)
+    })
     .width('100%')
     .padding({
       top: 8,
@@ -202,7 +198,7 @@ struct DrawerTab {
     Row({ space: 20 }) {
       Button() {
         Row() {
-          Image($r('app.media.menu'))
+          Image($r('app.media.ic_setting'))
             .width(20)
             .height(20)
           Text('设置')
@@ -214,10 +210,13 @@ struct DrawerTab {
       .backgroundColor('#2c2b2f')
       .borderRadius(4)
       .padding(8)
+      .onClick(() => {
+        this.RouterPage('pages/login/LoginPage')
+      })
 
       Button() {
         Row() {
-          Image($r('app.media.menu'))
+          Image($r('app.media.ic_more'))
             .width(20)
             .height(20)
           Text('更多')
@@ -229,6 +228,9 @@ struct DrawerTab {
       .backgroundColor('#2c2b2f')
       .borderRadius(4)
       .padding(8)
+      .onClick(() => {
+        this.RouterPage('pages/login/LoginPage')
+      })
     }
     .justifyContent(FlexAlign.Start)
     .width('100%')
@@ -257,24 +259,24 @@ struct DrawerTab {
             .height(20)
 
           Column({ space: 3 }) {
-            this.menuItem($r('app.media.menu'), '我的消息')
-            this.menuItem($r('app.media.menu'), '我的云贝', '免费兑黑胶VIP')
-            this.menuItem($r('app.media.menu'), '装扮中心', 'LABUBU装扮~')
-            this.menuItem($r('app.media.menu'), '创作者中心')
+            this.menuItem($r('app.media.ic_message_normal'), '我的消息', 'MessagePage')
+            this.menuItem($r('app.media.ic_cowry_normal'), '我的云贝', 'YunbeiPage', '免费兑黑胶VIP')
+            this.menuItem($r('app.media.ic_cloth_normal'), '装扮中心', 'ClothingPage', 'LABUBU装扮~')
+            this.menuItem($r('app.media.ic_create_normal'), '创作者中心', 'CreatePage')
             Divider()
               .height(1)
               .backgroundColor(Color.Grey)
               .padding({ left: 16, right: 16 })
-            this.menuItem($r('app.media.menu'), '最近播放')
-            this.menuItem($r('app.media.menu'), '定时关闭')
+            this.menuItem($r('app.media.ic_recently_normal'), '最近播放', 'RecentlyPlayPage')
+            this.menuItem($r('app.media.ic_time_normal'), '定时关闭', 'TimedShutdownPage')
             Divider()
               .height(1)
               .backgroundColor(Color.Grey)
               .padding({ left: 16, right: 16 })
-            this.menuItem($r('app.media.menu'), '商城')
-            this.menuItem($r('app.media.menu'), '云村有票')
-            this.menuItem($r('app.media.menu'), '云推歌')
-            this.menuItem($r('app.media.menu'), '我的客服')
+            this.menuItem($r('app.media.ic_shop_normal'), '商城', 'ShopPage')
+            this.menuItem($r('app.media.ic_ticket_normal'), '云村有票', 'TicketPage')
+            this.menuItem($r('app.media.ic_PushingSongs_normal'), '云推歌', 'RecommendSongPage')
+            this.menuItem($r('app.media.ic_server_normal'), '我的客服', 'CustomerServicePage')
           }
           .padding({ top: 10 })
           .alignItems(HorizontalAlign.Start)
