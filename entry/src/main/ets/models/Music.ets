@@ -12,7 +12,7 @@ export interface recommendCardType {
   title: string
   subtitle: string
   tag?: string
-  img: string
+  img: ResourceStr
   canPlay?: boolean
   isPlay?: boolean
 }

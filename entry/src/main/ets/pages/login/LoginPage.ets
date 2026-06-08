@@ -1,6 +1,9 @@
 import { KeyboardAvoidMode } from '@kit.ArkUI';
 import countries from '../../../assets/country_code_cn.json'
 import { BasicDataSource } from '../../utils/BasicDataSource'
+import LoginApi from '../../utils/api/LoginApi'
+import { ApiResponse } from '../../utils/api/ApiTypes'
+import UserStateManager from '../../utils/UserStateManager'
 
 interface CountryInfoStruct {
   cn: string;
@@ -38,7 +41,12 @@ struct LoginPage {
   listScroller: ListScroller = new ListScroller()
   @State areaCode: string = '+86';
   @State phone: string = '';
+  @State password: string = '';
+  @State captcha: string = '';
   @State agree: boolean = false;
+  @State loginMode: 'captcha' | 'password' = 'password';
+  @State isLoading: boolean = false;
+  @State errorMsg: string = '';
   @State countryList: CountryStruct[] = countries;
   private countryDataSource: CountryDateSource = new CountryDateSource(this.countryList);
   @State selectCountryIndex: number = 0; //当前选中的国家索引
@@ -51,12 +59,18 @@ struct LoginPage {
   @State showProblemPopup: boolean = false;
   @State showOtherWaysLogin: boolean = false;
   @State showCountryListPopup: boolean = false;
+  @State isFromIndexPage: boolean = false;
 
   aboutToAppear() {
     this.uiContext = this.getUIContext();
     if (!this.uiContext) {
       console.warn("no uiContext");
       return;
+    }
+    // 检查来源：侧边栏(IndexPage) push 进来的，还是 WelcomePage replace 过来的
+    const params = this.uiContext.getRouter().getParams();
+    if (params && Reflect.get(params, 'source') === 'IndexPage') {
+      this.isFromIndexPage = true;
     }
   }
 
@@ -85,16 +99,142 @@ struct LoginPage {
     })
   }
 
-  private RouterToPage(text: string, parms: string) {
-    this.getUIContext()
-      .getRouter()
-      .pushUrl({ url: text, params: { type: parms, source: 'loginPage' } }, (err) => {
+  private RouterToPage(text: string, parms: string, useReplace: boolean = false) {
+    const router = this.getUIContext().getRouter();
+    if (useReplace) {
+      router.replaceUrl({ url: text, params: { type: parms, source: 'loginPage' } }, (err: BusinessError) => {
         if (err) {
-          console.error('页面跳转失败', err);
-        } else {
-          console.info('页面跳转成功');
+          console.error('页面跳转失败', JSON.stringify(err));
         }
       });
+    } else {
+      router.pushUrl({ url: text, params: { type: parms, source: 'loginPage' } }, (err: BusinessError) => {
+        if (err) {
+          console.error('页面跳转失败', JSON.stringify(err));
+        }
+      });
+    }
+  }
+
+  // 登录
+  private async handleLogin() {
+    if (!this.phone || this.phone.length < 6) {
+      this.errorMsg = '请输入正确的手机号';
+      return;
+    }
+    if (!this.agree) {
+      this.errorMsg = '请先阅读并同意服务条款和隐私政策';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMsg = '';
+
+    try {
+      const countryCode = this.areaCode.replace('+', '');
+      // 密码登录
+      if (this.loginMode === 'password') {
+        if (!this.password) {
+          this.errorMsg = '请输入密码';
+          this.isLoading = false;
+          return;
+        }
+        const result = await LoginApi.loginByPhone(this.phone, this.password, countryCode);
+        if (result.code === 200) {
+          // 登录成功
+          console.info('LoginPage: login success', result.profile?.nickname);
+          const appContext = this.getUIContext().getHostContext()?.getApplicationContext();
+          if (!appContext) {
+            console.error('LoginPage: failed to get application context');
+            this.isLoading = false;
+            return;
+          }
+          await UserStateManager.onLoginSuccess(appContext, result.profile);
+          AppStorage.setOrCreate('showSideBar', false);
+          if (this.isFromIndexPage) {
+            this.getUIContext().getRouter().back();
+          } else {
+            this.RouterToPage('pages/Index', '', true);
+          }
+        } else {
+          this.errorMsg = result.message || '登录失败，请检查账号密码';
+        }
+      } else {
+        // 验证码登录 - 先发送验证码
+        if (!this.captcha) {
+          this.errorMsg = '请输入验证码';
+          this.isLoading = false;
+          return;
+        }
+        const verifyResult: ApiResponse = await LoginApi.verifyCaptcha(this.phone, this.captcha);
+        if (verifyResult.code === 200) {
+          this.errorMsg = '验证码验证通过（需后端配合完善完整登录流程）';
+        } else {
+          this.errorMsg = verifyResult.message || '验证码错误';
+        }
+      }
+    } catch (err) {
+      console.error('LoginPage: login error', JSON.stringify(err));
+      this.errorMsg = '网络连接失败，请确认API服务已启动(localhost:3000)';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  // 发送验证码
+  private async sendCaptcha() {
+    const countryCode = this.areaCode.replace('+', '');
+    if (!this.phone || this.phone.length < 6) {
+      this.errorMsg = '请输入正确的手机号';
+      return;
+    }
+    try {
+      this.isLoading = true;
+      this.areaCode = this.areaCode.replace('+', '');
+      const result: ApiResponse = await LoginApi.sendCaptcha(this.phone, countryCode);
+      if (result.code === 200) {
+        this.errorMsg = '验证码已发送';
+      } else {
+        this.errorMsg = result.message || '发送失败';
+      }
+    } catch (err) {
+      console.error('LoginPage: send captcha error', JSON.stringify(err));
+      this.errorMsg = '网络连接失败，请确认API服务已启动(localhost:3000)';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  //游客登录
+  private async handleGuestLogin() {
+    this.isLoading = true;
+    try {
+      const result = await LoginApi.registerAnonymous()
+      console.info('LoginPage: guest login result', result.code)
+      if (result.code === 200) {
+        console.info('LoginPage: guest login success', result.profile?.nickname);
+        const appContext = this.getUIContext().getHostContext()?.getApplicationContext();
+        if (!appContext) {
+          console.error('LoginPage: failed to get application context');
+          this.isLoading = false;
+          return;
+        }
+        await UserStateManager.onLoginSuccess(appContext, result.profile);
+        AppStorage.setOrCreate('showSideBar', false);
+        if (this.isFromIndexPage) {
+          this.getUIContext().getRouter().back();
+        } else {
+          this.RouterToPage('pages/Index', '', true);
+        }
+      } else {
+        this.errorMsg = result.message || '登录失败';
+      }
+    } catch (err) {
+      console.error('LoginPage: guest login error', JSON.stringify(err));
+      this.errorMsg = '网络连接失败，请确认API服务已启动(localhost:3000)';
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   // 顶部内容
@@ -206,7 +346,8 @@ struct LoginPage {
             .borderRadius(24)
             .width('45%')
             .onClick(() => {
-              this.RouterToPage('pages/Index', '');
+              AppStorage.setOrCreate('showSideBar', false);
+              this.handleGuestLogin();
             })
         }
       }
@@ -504,24 +645,123 @@ struct LoginPage {
                   .inputFilter("[0-9]")
                   .placeholderColor('#ff4f4f4f')
                   .backgroundColor('#2a2a2a')
+                  .onChange((value: string) => {
+                    this.phone = value;
+                    this.errorMsg = '';
+                  })
               }
               .padding(10)
               .backgroundColor('#2a2a2a')
               .borderRadius(10)
-              .margin({ top: "45%", left: 30, right: 30 })
+              .margin({ top: '35%', left: 30, right: 30 })
+
+              // 密码输入框（密码登录模式）
+              if (this.loginMode === 'password') {
+                Row({ space: 10 }) {
+                  TextInput({ placeholder: '输入密码', text: this.password })
+                    .type(InputType.Password)
+                    .fontColor('#ccc')
+                    .fontSize(20)
+                    .fontWeight(FontWeight.Bold)
+                    .layoutWeight(1)
+                    .caretColor('#ec271b')
+                    .placeholderColor('#ff4f4f4f')
+                    .backgroundColor('#2a2a2a')
+                    .padding(13)
+                    .borderRadius(10)
+                    .margin({ top: 10, left: 30, right: 30 })
+                    .onChange((value: string) => {
+                      this.password = value;
+                      this.errorMsg = '';
+                    })
+                }
+              }
+
+              // 验证码输入框（验证码登录模式）
+              if (this.loginMode === 'captcha') {
+                Row({ space: 10 }) {
+                  TextInput({ placeholder: '输入验证码', text: this.captcha })
+                    .fontColor('#ccc')
+                    .fontSize(20)
+                    .fontWeight(FontWeight.Bold)
+                    .layoutWeight(1)
+                    .maxLength(6)
+                    .caretColor('#ec271b')
+                    .inputFilter("[0-9]")
+                    .placeholderColor('#ff4f4f4f')
+                    .backgroundColor('#2a2a2a')
+                    .padding(13)
+                    .borderRadius(10)
+                    .onChange((value: string) => {
+                      this.captcha = value;
+                      this.errorMsg = '';
+                    })
+
+                  Button('获取验证码')
+                    .fontSize(14)
+                    .fontColor('#fff')
+                    .backgroundColor('#fe3a3b')
+                    .borderRadius(20)
+                    .height(45)
+                    .width(110)
+                    .onClick(() => this.sendCaptcha())
+                }
+                .margin({ top: 10, left: 30, right: 30 })
+              }
+
+              // 登录模式切换
+              Row({ space: 10 }) {
+                Text('密码登录')
+                  .fontSize(14)
+                  .fontColor(this.loginMode === 'password' ? '#fe3a3b' : '#666')
+                  .onClick(() => {
+                    this.loginMode = 'password';
+                    this.errorMsg = '';
+                  })
+                Text('|')
+                  .fontColor('#666')
+                Text('验证码登录')
+                  .fontSize(14)
+                  .fontColor(this.loginMode === 'captcha' ? '#fe3a3b' : '#666')
+                  .onClick(() => {
+                    this.loginMode = 'captcha';
+                    this.errorMsg = '';
+                  })
+              }
+              .margin({ top: 15 })
+              .justifyContent(FlexAlign.Center)
+              .width('100%')
+
+              // 错误提示
+              if (this.errorMsg) {
+                Text(this.errorMsg)
+                  .fontSize(13)
+                  .fontColor('#ff6b6b')
+                  .margin({ top: 8, left: 30, right: 30 })
+                  .textAlign(TextAlign.Center)
+                  .width('100%')
+              }
 
               // 登录按钮
-              Button('验证码登录')
+              Button(this.loginMode === 'password' ? '手机号登录' : '验证码登录')
                 .fontSize(16)
                 .fontColor('#fff')
                 .backgroundColor('#fe3a3b')
                 .borderRadius(22.5)
                 .width('75%')
                 .height(45)
-                .margin({ top: 20 })
-                .onClick(() => {
-                  console.log('点击登录，手机号:', this.phone)
-                })
+                .margin({ top: 15 })
+                .enabled(!this.isLoading)
+                .onClick(() => this.handleLogin())
+
+              // 加载提示
+              if (this.isLoading) {
+                LoadingProgress()
+                  .color(Color.White)
+                  .width(24)
+                  .height(24)
+                  .margin({ top: 8 })
+              }
 
               // 勾选协议
               Row({ space: 5 }) {

@@ -12,17 +12,22 @@ export default class SongManager {
   private static readonly SONG_KEY: string = 'song_cache_key'
 
   static getStore() {
-    return preferences.getPreferencesSync(SongManager.context || getContext(), {
-      name: SongManager.STORE_NAME
-    })
+    try {
+      return preferences.getPreferencesSync(SongManager.context, {
+        name: SongManager.STORE_NAME
+      });
+    } catch (err) {
+      console.error('SongManager getStore error:', JSON.stringify(err));
+      return undefined;
+    }
   }
 
   // 更新音乐播放状态
   static async updateSong(song: string) {
     try {
       const store = SongManager.getStore()
-      store.putSync(SongManager.SONG_KEY, song)
-      await store.flush()
+      store?.putSync(SongManager.SONG_KEY, song)
+      await store?.flush()
     } catch (err) {
       console.error('SongManager updateSong error:', JSON.stringify(err))
     }
@@ -32,8 +37,8 @@ export default class SongManager {
   static async getSong(): Promise<PlayStateType> {
     try {
       const store = SongManager.getStore()
-      const result = store.getSync(SongManager.SONG_KEY, JSON.stringify(new PlayStateType())) as string
-      return JSON.parse(result) as PlayStateType
+      const result = store?.getSync(SongManager.SONG_KEY, JSON.stringify(new PlayStateType())) as string
+      return result ? JSON.parse(result) as PlayStateType : new PlayStateType()
     } catch (err) {
       console.error('SongManager getSong error:', JSON.stringify(err))
       return new PlayStateType()

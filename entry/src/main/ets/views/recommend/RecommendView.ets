@@ -1,8 +1,13 @@
-import { recommendCardType, songItemType } from '../../models/Music'
-import { recommendCardList, songs } from '../../constants/MusicConstants'
-import { tryCloseSideBar } from '../../utils/GlobalFunction';
+import { recommendCardType, songItemType } from '../../models/Music';
+import { recommendCardList, songs } from '../../constants/MusicConstants';
+import { tryCloseSideBar, navigateToPage } from '../../utils/GlobalFunction';
 import { BasicDataSource } from '../../utils/BasicDataSource';
 import { CommonConstants } from '../../constants/CommonConstants';
+import RecommendApi from '../../utils/api/RecommendApi';
+import PlaylistApi from '../../utils/api/PlaylistApi';
+import SongApi from '../../utils/api/SongApi';
+import AudioPlayerManager from '../../utils/AudioPlayerManager';
+import { BannerItem, SongItem, PlaylistItem, RecommendPlaylistItem } from '../../utils/api/ApiTypes';
 
 class RecommendCardDateSource extends BasicDataSource<recommendCardType> {
   private data: recommendCardType[] = [];
@@ -44,10 +49,18 @@ interface ContentBlock {
   tag?: string;
 }
 
+interface PlaylistPageParams {
+  playlistId: number;
+  playlistName: string;
+  coverImg: string;
+}
+
+@Component
 @Reusable
 struct CardItem {
   @Prop card: recommendCardType
   @StorageLink('showSideBar') show: boolean = false;
+  @State private isPlay: boolean = false;
 
   build() {
     Stack() {
@@ -81,13 +94,13 @@ struct CardItem {
           }
           Blank()
           if (this.card.canPlay) {
-            Image($r(!this.card.isPlay ? 'app.media.ic_play' : 'app.media.ic_paused'))
-              .width(this.card.isPlay ? 16 : 20)
-              .height(this.card.isPlay ? 16 : 20)
+            Image($r(!this.isPlay ? 'app.media.ic_play' : 'app.media.ic_paused'))
+              .width(this.isPlay ? 16 : 20)
+              .height(this.isPlay ? 16 : 20)
               .margin({ right: 16, bottom: 5 })
               .onClick(() => {
                 tryCloseSideBar(this.getUIContext(), this.show, () => {
-                  this.card.isPlay = !this.card.isPlay
+                  this.isPlay = !this.isPlay;
                 });
               })
           }
@@ -128,6 +141,7 @@ struct CardItem {
   }
 }
 
+@Component
 @Reusable
 struct SongCardItem {
   @Prop song: songItemType
@@ -176,6 +190,92 @@ struct RecommendView {
   @State private recommendCardDataSource: RecommendCardDateSource = new RecommendCardDateSource(recommendCardList);
   @State private songDataSource: SongDataSource = new SongDataSource(this.chunkSongs(songs, 3));
 
+  // API 数据
+  @State private banners: BannerItem[] = [];
+  @State private personalizedPlaylists: RecommendPlaylistItem[] = [];
+  @State private topSongs: SongItem[] = [];
+  @State private dailySongs: SongItem[] = [];
+  private audioManager: AudioPlayerManager = AudioPlayerManager.getInstance();
+
+  aboutToAppear(): void {
+    this.loadApiData();
+  }
+
+  private async loadApiData() {
+    try {
+      // 并行加载多个数据源
+      const bannerPromise = RecommendApi.getBanners(1).catch((err: Error) => {
+        console.error('load banners error:', JSON.stringify(err));
+        return null;
+      });
+      const personalizedPromise = RecommendApi.getPersonalized(6).catch((err: Error) => {
+        console.error('load personalized error:', JSON.stringify(err));
+        return null;
+      });
+      const topSongsPromise = RecommendApi.getTopSongs(7).catch((err: Error) => {
+        console.error('load top songs error:', JSON.stringify(err));
+        return null;
+      });
+      const bannerRes = await bannerPromise;
+      const personalizedRes = await personalizedPromise;
+      const topSongsRes = await topSongsPromise;
+
+      if (bannerRes?.banners) {
+        this.banners = bannerRes.banners;
+      }
+
+      if (personalizedRes?.code === 200 && personalizedRes?.result) {
+        this.personalizedPlaylists = personalizedRes.result.map((item: RecommendPlaylistItem) => {
+          const playlistItem: RecommendPlaylistItem = {
+            id: item.id,
+            type: item.type,
+            name: item.name,
+            copywriter: item.copywriter,
+            picUrl: item.picUrl,
+            playCount: item.playCount,
+            trackCount: item.trackCount
+          };
+          return playlistItem;
+        });
+      }
+
+      if (topSongsRes?.code === 200 && topSongsRes?.data) {
+        this.topSongs = topSongsRes.data as SongItem[];
+      }
+
+      // 尝试加载每日推荐（需登录）
+      try {
+        const dailyRes = await RecommendApi.getDailySongs();
+        if (dailyRes?.code === 200 && dailyRes?.data?.dailySongs) {
+          this.dailySongs = dailyRes.data.dailySongs;
+        }
+      } catch (_err) {
+        // 未登录时忽略
+      }
+
+      console.info('RecommendView: API data loaded successfully');
+    } catch (err) {
+      console.error('RecommendView: loadApiData error', JSON.stringify(err));
+    }
+  }
+
+  // 播放歌曲
+  private async playSongById(songId: number, songName: string, artistNames: string, songImg: string = '') {
+    try {
+      const urlResult = await SongApi.getSongUrl(songId.toString(), 320000);
+      if (urlResult.code === 200 && urlResult.data && urlResult.data.length > 0) {
+        const songUrl = urlResult.data[0].url;
+        if (songUrl && songUrl !== '') {
+          await this.audioManager.initPlayer(songUrl, songName, artistNames, songImg);
+        } else {
+          console.error('RecommendView: 歌曲无播放地址，可能需要VIP');
+        }
+      }
+    } catch (err) {
+      console.error('RecommendView: play error', JSON.stringify(err));
+    }
+  }
+
   // 数据驱动的页面区块定义（减少重复代码）
   private contentBlocks: ContentBlock[][] = [
     [
@@ -220,6 +320,7 @@ struct RecommendView {
 
   private refresh() {
     this.isRefreshing = true;
+    this.loadApiData();
     setTimeout(() => {
       this.isRefreshing = false;
       console.log('刷新完成');
@@ -230,9 +331,40 @@ struct RecommendView {
   cardList() {
     Scroll() {
       Row({ space: 12 }) {
-        LazyForEach(this.recommendCardDataSource, (card: recommendCardType) => {
-          CardItem({ card: card })
-        }, (card: recommendCardType) => card.title)
+        if (this.personalizedPlaylists.length > 0) {
+          // 使用API推荐的歌单
+          ForEach(this.personalizedPlaylists, (item: RecommendPlaylistItem) => {
+            Column() {
+              Image(item.picUrl)
+                .width(120)
+                .height(120)
+                .borderRadius(12)
+                .objectFit(ImageFit.Cover)
+              Text(item.name)
+                .fontSize(12)
+                .fontColor(Color.White)
+                .maxLines(2)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+                .width(120)
+                .margin({ top: 4 })
+            }
+            .onClick(() => {
+              tryCloseSideBar(this.getUIContext(), this.show, () => {
+                const pageParams: PlaylistPageParams = {
+                  playlistId: item.id,
+                  playlistName: item.name,
+                  coverImg: item.picUrl
+                };
+                navigateToPage(this.getUIContext(), 'pages/other/PlaylistDetailPage', pageParams);
+              });
+            })
+          })
+        } else {
+          // 降级到本地数据
+          LazyForEach(this.recommendCardDataSource, (card: recommendCardType) => {
+            CardItem({ card: card })
+          }, (card: recommendCardType) => card.title)
+        }
       }
       .padding({ left: 16 })
     }
@@ -245,13 +377,42 @@ struct RecommendView {
   songCardList() {
     Scroll() {
       Row() {
-        LazyForEach(this.songDataSource, (group: songItemType[]) => {
-          Column({ space: 0 }) {
-            ForEach(group, (song: songItemType) => {
-              SongCardItem({ song: song })
+        if (this.topSongs.length > 0) {
+          // 使用API新歌列表
+          ForEach(this.topSongs.slice(0, 6), (song: SongItem) => {
+            Column({ space: 6 }) {
+              Image(song.album?.picUrl)
+                .width(120)
+                .height(120)
+                .borderRadius(12)
+                .objectFit(ImageFit.Cover)
+              Text(song.name)
+                .fontSize(14)
+                .fontColor(Color.White)
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+                .width(120)
+              Text(song.artists.map(a => a.name).join('/'))
+                .fontSize(12)
+                .fontColor('#888')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+                .width(120)
+            }
+            .onClick(() => {
+              this.playSongById(song.id, song.name, song.artists.map(a => a.name).join('/'), song.album?.picUrl || '');
             })
-          }
-        })
+          })
+        } else {
+          // 降级到本地数据
+          LazyForEach(this.songDataSource, (group: songItemType[]) => {
+            Column({ space: 0 }) {
+              ForEach(group, (song: songItemType) => {
+                SongCardItem({ song: song })
+              })
+            }
+          })
+        }
       }
     }
     .scrollable(ScrollDirection.Horizontal)
@@ -343,6 +504,44 @@ struct RecommendView {
     Refresh({ refreshing: $$this.isRefreshing, builder: this.headerRefresh() }) {
       Scroll() {
         Column() {
+          // Banner轮播（从API加载）
+          if (this.banners.length > 0) {
+            Swiper() {
+              ForEach(this.banners, (banner: BannerItem) => {
+                Image(banner.pic)
+                  .width('95%')
+                  .aspectRatio(2.2)
+                  .borderRadius(12)
+                  .objectFit(ImageFit.Cover)
+              })
+            }
+            .autoPlay(true)
+            .interval(4000)
+            .indicator(true)
+            .width('100%')
+            .padding({ left: 16, right: 16, top: 8, bottom: 4 })
+          }
+
+          // 每日推荐数据（需登录）
+          if (this.dailySongs.length > 0) {
+            Row() {
+              Text('每日推荐')
+                .fontSize(18)
+                .fontColor(Color.White)
+                .fontWeight(FontWeight.Bold)
+              Text('免费听')
+                .fontSize(12)
+                .fontColor('#d8a0a0')
+                .backgroundColor('#332222')
+                .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+                .borderRadius(4)
+                .margin({ left: 8 })
+            }
+            .width('100%')
+            .padding({ left: '23vp', right: 16, top: 12, bottom: 6 })
+            this.songCardList();
+          }
+
           this.cardList()
 
           Column() {

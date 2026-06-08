@@ -1,19 +1,32 @@
 @Entry
 @Component
 struct WelcomePage {
-  pageStack: NavPathStack = new NavPathStack();
-  progress: number = 0;
+  @State progress: number = 0;
 
-  async aboutToAppear() {
-    setTimeout(() => {
-      this.getUIContext().getRouter().replaceUrl({ url: 'pages/login/LoginPage' }, (err) => {
-        if (err) {
-          console.error('页面跳转失败', err);
-        } else {
-          console.info('页面跳转成功');
-        }
-      });
-    }, 2000);
+  aboutToAppear(): void {
+    // 进度条动画：2秒内从0递增到100
+    const totalSteps = 40;
+    const stepSize = 100 / totalSteps;
+    const intervalTime = 2000 / totalSteps;
+    let currentStep = 0;
+
+    const timer = setInterval(() => {
+      currentStep++;
+      this.progress = Math.min(currentStep * stepSize, 100);
+
+      if (currentStep >= totalSteps) {
+        clearInterval(timer);
+        this.getUIContext().getRouter().replaceUrl({
+          url: 'pages/login/LoginPage'
+        }, (err: BusinessError) => {
+          if (err) {
+            console.error('页面跳转失败', JSON.stringify(err));
+          } else {
+            console.info('页面跳转成功');
+          }
+        });
+      }
+    }, intervalTime);
   }
 
   build() {

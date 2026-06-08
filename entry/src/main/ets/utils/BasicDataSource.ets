@@ -1,13 +1,13 @@
 export class BasicDataSource<T> implements IDataSource {
   private listeners: DataChangeListener[] = [];
-  private originDataArray: T[] = [];
+  protected dataArray: T[] = [];
 
   public totalCount(): number {
-    return this.originDataArray.length;
+    return this.dataArray.length;
   }
 
   public getData(index: number): T {
-    return this.originDataArray[index];
+    return this.dataArray[index];
   }
 
   // 该方法为框架侧调用，为LazyForEach组件向其数据源处添加listener监听

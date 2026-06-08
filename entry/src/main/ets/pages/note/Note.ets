@@ -17,32 +17,30 @@ struct Note {
 
   // 获取组件大小、位置、平移缩放旋转及仿射矩阵属性信息。
   private getTextInfo(index: number): Record<string, number> {
-    let modePosition: componentUtils.ComponentInfo = componentUtils.getRectangleById('tab' + index.toString());
-    if (!modePosition) {
-      // 处理组件未找到的情况，返回默认值或抛出异常
-      console.error('组件未找到');
+    try {
+      let modePosition: componentUtils.ComponentInfo =
+        this.getUIContext().getComponentUtils().getRectangleById('tab' + index.toString());
+      if (!modePosition || !modePosition.windowOffset || !modePosition.size) {
+        console.error('组件信息不完整');
+        return { 'left': 0, 'width': 0 };
+      }
+      // 使用系统 px2vp 转换
+      const textLeftInTab = this.getUIContext().px2vp(modePosition.windowOffset.x);
+      const textWidth = this.getUIContext().px2vp(modePosition.size.width);
+      const tabLeft = index * 80;
+      const totalLeft = tabLeft + textLeftInTab;
+      return { 'left': totalLeft, 'width': textWidth };
+    } catch (err) {
+      console.error('getTextInfo error:', JSON.stringify(err));
       return { 'left': 0, 'width': 0 };
     }
-    // 检查必要的属性是否存在
-    if (!modePosition.windowOffset || !modePosition.size) {
-      // 处理组件信息不完整的情况
-      console.error('组件信息不完整');
-      return { 'left': 0, 'width': 0 };
-    }
-    const px2vp = (px: number) => {
-      return px / 750 * 100;
-    };
-    const left = px2vp(modePosition.windowOffset.x);
-    const width = px2vp(modePosition.size.width);
-    return { 'left': left, 'width': width };
-
   }
 
   private getCurrentIndicatorInfo(index: number, event: TabsAnimationEvent): Record<string, number> {
     let nextIndex = index
     if (index > 0 && event.currentOffset > 0) {
       nextIndex--
-    } else if (index < 3 && event.currentOffset < 0) {
+    } else if (index < this.tabArray.length - 1 && event.currentOffset < 0) {
       nextIndex++
     }
     let indexInfo = this.getTextInfo(index)
@@ -82,7 +80,7 @@ struct Note {
           if (this.currentIndex === tabIndex && (this.indicatorLeftMargin === 0 || this.indicatorWidth === 0)) {
             if (newValue.position.x != undefined) {
               let positionX = Number.parseFloat(newValue.position.x.toString())
-              this.indicatorLeftMargin = Number.isNaN(positionX) ? 0 : positionX
+              this.indicatorLeftMargin = (Number.isNaN(positionX) ? 0 : positionX) + tabIndex * 80
             }
             let width = Number.parseFloat(newValue.width.toString())
             this.indicatorWidth = Number.isNaN(width) ? 0 : width
@@ -129,7 +127,7 @@ struct Note {
             .height(2)
             .backgroundColor(Color.White)
             .borderRadius(2)
-            .margin({ left: this.indicatorLeftMargin - 160, top: 38 })
+            .margin({ left: this.indicatorLeftMargin, top: 38 })
         }
         .layoutWeight(1)
 
@@ -170,7 +168,7 @@ struct Note {
 
       //tabs
       Tabs({ barPosition: BarPosition.Start, controller: this.controller, index: 1 }) {
-        ForEach(this.tabArray, (item: number, index: number) => {
+        ForEach(this.tabArray, (item: string, index: number) => {
           TabContent() {
             if (index === 0) {
             } else if (index === 1) {
@@ -218,8 +216,8 @@ struct Note {
         // 在页面跟手滑动过程中，逐帧触发该回调。
         let currentIndicatorInfo = this.getCurrentIndicatorInfo(index, event)
         this.currentIndex = currentIndicatorInfo.index
-        this.indicatorLeftMargin = currentIndicatorInfo.left - 50
-        this.indicatorWidth = currentIndicatorInfo.width + 20
+        this.indicatorLeftMargin = currentIndicatorInfo.left
+        this.indicatorWidth = currentIndicatorInfo.width
         return true
       })
     }

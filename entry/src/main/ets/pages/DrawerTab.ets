@@ -1,14 +1,19 @@
 import { CommonConstants } from '../constants/CommonConstants';
+import { UserProfile } from '../utils/api/ApiTypes';
+import UserStateManager from '../utils/UserStateManager';
+import LoginApi from '../utils/api/LoginApi';
 
 @Preview
 @Component
 struct DrawerTab {
   @State active: number = 0;
+  @StorageLink('isLoggedIn') isLoggedIn: boolean = false;
+  @StorageLink('userInfo') userInfo: UserProfile | null = null;
 
   private RouterPage(url: string) {
     this.getUIContext()
       .getRouter()
-      .replaceUrl({ url: url, params: { source: 'IndexPage' } }, (err) => {
+      .pushUrl({ url: url, params: { source: 'IndexPage' } }, (err) => {
         if (err) {
           console.error('页面跳转失败', err);
         } else {
@@ -22,20 +27,41 @@ struct DrawerTab {
   TopBar() {
     Row() {
       Row() {
-        Image($r('app.media.default_profile'))
-          .width(25)
-          .height(25)
-          .margin({ left: 16 })
-        Text('立刻登录>')
-          .fontSize(16)
-          .fontColor(Color.White)
-          .fontWeight(FontWeight.Medium)
-          .margin({ left: 17 })
-          .onClick(() => {
-            this.RouterPage('pages/login/LoginPage');
-          })
+        if (this.isLoggedIn && this.userInfo) {
+          // 已登录：显示用户头像和昵称
+          Image(this.userInfo.avatarUrl)
+            .width(35)
+            .height(35)
+            .borderRadius(17.5)
+            .margin({ left: 16 })
+            .objectFit(ImageFit.Cover)
+          Text(this.userInfo.nickname)
+            .fontSize(16)
+            .fontColor(Color.White)
+            .fontWeight(FontWeight.Medium)
+            .margin({ left: 12 })
+        } else {
+          // 未登录：显示默认头像+登录入口
+          Image($r('app.media.default_profile'))
+            .width(25)
+            .height(25)
+            .margin({ left: 16 })
+          Text('立刻登录>')
+            .fontSize(16)
+            .fontColor(Color.White)
+            .fontWeight(FontWeight.Medium)
+            .margin({ left: 17 })
+            .onClick(() => {
+              this.RouterPage('pages/login/LoginPage');
+            })
+        }
       }
       .layoutWeight(1)
+      .onClick(() => {
+        if (!this.isLoggedIn) {
+          this.RouterPage('pages/login/LoginPage');
+        }
+      })
 
       Row() {
         Image($r('app.media.ScanCode'))
@@ -211,7 +237,7 @@ struct DrawerTab {
       .borderRadius(4)
       .padding(8)
       .onClick(() => {
-        this.RouterPage('pages/login/LoginPage')
+        this.RouterPage('pages/other/SettingPage')
       })
 
       Button() {
@@ -229,7 +255,7 @@ struct DrawerTab {
       .borderRadius(4)
       .padding(8)
       .onClick(() => {
-        this.RouterPage('pages/login/LoginPage')
+        this.RouterPage('pages/other/MorePage')
       })
     }
     .justifyContent(FlexAlign.Start)

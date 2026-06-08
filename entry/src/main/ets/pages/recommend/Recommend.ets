@@ -5,6 +5,7 @@ import ListenFree from '../../views/recommend/ListenFree';
 import Music from '../../views/recommend/Music';
 import Podcast from '../../views/recommend/Podcast';
 import RecommendView from '../../views/recommend/RecommendView'
+import SearchApi, { HotSearchData } from '../../utils/api/SearchApi'
 
 class TabsDateSource extends BasicDataSource<string> {
   private data: string[] = [];
@@ -36,6 +37,21 @@ struct Recommend {
   @State active: number = 0;
   @State keyWord: string = '搜索';
   private tabsController: TabsController = new TabsController();
+
+  aboutToAppear(): void {
+    this.fetchDefaultKeyword();
+  }
+
+  private async fetchDefaultKeyword() {
+    try {
+      const result = await SearchApi.hotSearch();
+      if (result.code === 200 && result.data && (result.data as HotSearchData).hots && (result.data as HotSearchData).hots.length > 0) {
+        this.keyWord = (result.data as HotSearchData).hots[0].first;
+      }
+    } catch (err) {
+      console.error('Recommend fetch keyword error:', JSON.stringify(err));
+    }
+  }
 
   @Builder
   SideBarControllerButton() {

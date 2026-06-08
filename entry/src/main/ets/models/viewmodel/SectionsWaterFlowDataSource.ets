@@ -89,8 +89,9 @@ export class SectionsWaterFlowDataSource implements IDataSource {
   }
 
   public deleteLastItem(): void {
-    this.dataArray.splice(-1, 1);
-    this.notifyDataDelete(this.dataArray.length);
+    const lastIndex = this.dataArray.length - 1;
+    this.dataArray.splice(lastIndex, 1);
+    this.notifyDataDelete(lastIndex);
   }
 
   public deleteItem(index: number): void {

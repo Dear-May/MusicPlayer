@@ -21,6 +21,9 @@
         "startWindowIcon": "$media:startIcon",
         "startWindowBackground": "$color:start_window_background",
         "exported": true,
+        "backgroundModes": [
+          "audioPlayback"
+        ],
         "skills": [
           {
             "entities": [
@@ -39,6 +42,16 @@
       },
       {
         "name": "ohos.permission.GET_NETWORK_INFO"
+      },
+      {
+        "name": "ohos.permission.KEEP_BACKGROUND_RUNNING",
+        "reason": "$string:EntryAbility_desc",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when": "always"
+        }
       },
       {
         "name": "ohos.permission.READ_MEDIA",

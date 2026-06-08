@@ -1,10 +1,10 @@
 import { changeSideBarShow, tryCloseSideBar } from '../utils/GlobalFunction';
-import { SONG_KEY, tabsData } from '../constants/Index'
+import { tabsData } from '../constants/Index'
 import { TabClass } from '../models/Index';
-import { PlayStateType } from '../models/PlayState'
 import DrawerTab from './DrawerTab';
 import Note from './note/Note';
 import Recommend from './recommend/Recommend'
+import AudioPlayerManager from '../utils/AudioPlayerManager';
 
 @Entry
 @Component
@@ -15,52 +15,86 @@ struct RecommendView {
   @State opacityNum: number = 1;
   @State isPlaying: boolean = false;
   @State rotateAngle: number = 0;
+  @State songName: string = '未在播放';
+  @State singerName: string = '';
+  @State songImg: string = '';
   tabsController: TabsController = new TabsController();
   @StorageLink('showSideBar') show: boolean = false;
-  @StorageLink(SONG_KEY)
-  playState: PlayStateType = new PlayStateType();
+  private audioManager: AudioPlayerManager = AudioPlayerManager.getInstance();
+
+  aboutToAppear(): void {
+    this.audioManager.setOnStateChange((isPlaying: boolean, song: string, singer: string, img: string) => {
+      this.isPlaying = isPlaying;
+      if (song) {
+        this.songName = song;
+        this.singerName = singer;
+        this.songImg = img;
+      }
+    });
+  }
 
   @Builder
   MusicPlayerBar() {
     Row() {
       Stack() {
-        // 外层图片
+        // 外层图片 - 始终显示静态唱片图
         Image($r('app.media.record'))
           .width(45)
           .height(45)
 
-        // 内层图片
-        Image($r('app.media.record_center'))
-          .width(25)
-          .height(25)
-          .borderRadius(12.5)
-          .rotate({ angle: this.rotateAngle })
-          .animation({
-            duration: 5000,
-            curve: Curve.Linear,
-            iterations: -1,
-            expectedFrameRateRange: {
-              min: 20,
-              max: 120,
-              expected: 90,
-            }
-          })
+        // 内层图片 - 优先使用API获取的专辑封面
+        if (this.songImg) {
+          Image(this.songImg)
+            .width(25)
+            .height(25)
+            .borderRadius(12.5)
+            .objectFit(ImageFit.Cover)
+            .rotate({ angle: this.rotateAngle })
+            .animation({
+              duration: 5000,
+              curve: Curve.Linear,
+              iterations: -1,
+              expectedFrameRateRange: {
+                min: 20,
+                max: 120,
+                expected: 90,
+              }
+            })
+        } else {
+          Image($r('app.media.record_center'))
+            .width(25)
+            .height(25)
+            .borderRadius(12.5)
+            .rotate({ angle: this.rotateAngle })
+            .animation({
+              duration: 5000,
+              curve: Curve.Linear,
+              iterations: -1,
+              expectedFrameRateRange: {
+                min: 20,
+                max: 120,
+                expected: 90,
+              }
+            })
+        }
       }
       .width(45)
       .height(45)
 
       Row({ space: 5 }) {
-        Text('正在播放的歌曲')
+        Text(this.songName)
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
           .fontColor($r('sys.color.white'))
-        Text('-')
-          .fontSize(14)
-          .fontWeight(FontWeight.Bold)
-          .fontColor('#666')
-        Text('歌手名')
-          .fontSize(14)
-          .fontColor('#666')
+        if (this.singerName) {
+          Text('-')
+            .fontSize(14)
+            .fontWeight(FontWeight.Bold)
+            .fontColor('#666')
+          Text(this.singerName)
+            .fontSize(14)
+            .fontColor('#666')
+        }
       }
 
       Row({ space: 18 }) {
@@ -68,8 +102,8 @@ struct RecommendView {
           .width(25)
           .height(25)
           .onClick(() => {
-            this.isPlaying = !this.isPlaying;
-            this.rotateAngle = 360 - this.rotateAngle;
+            this.audioManager.togglePlay();
+            this.rotateAngle = this.rotateAngle + 180;
           })
 
         Image($r('app.media.play_list'))

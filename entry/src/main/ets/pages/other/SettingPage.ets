@@ -1,6 +1,6 @@
 @Entry
 @Component
-struct CustomerServicePage {
+struct SettingPage {
   build() {
     Column() {
       Row() {
@@ -11,7 +11,7 @@ struct CustomerServicePage {
           .onClick(() => {
             this.getUIContext().getRouter().back();
           })
-        Text('Customer Service')
+        Text('Settings')
           .fontSize(20)
           .fontColor(Color.White)
           .fontWeight(FontWeight.Bold)
@@ -20,65 +20,80 @@ struct CustomerServicePage {
       .width('100%')
       .padding({ left: 16, top: 40, bottom: 10 })
 
-      Column({ space: 16 }) {
-        Text('FAQ')
-          .fontSize(18)
-          .fontColor(Color.White)
-          .fontWeight(FontWeight.Bold)
-          .width('100%')
+      Scroll() {
+        Column({ space: 8 }) {
+          Text('Playback')
+            .fontSize(14)
+            .fontColor('#888')
+            .margin({ top: 12 })
 
-        Column({ space: 1 }) {
-          Text('How to download songs?')
-            .fontSize(15)
-            .fontColor(Color.White)
-            .width('100%')
-            .padding(14)
-            .backgroundColor('#1d1d1f')
-            .borderRadius(8)
-          Text('Membership benefits')
-            .fontSize(15)
-            .fontColor(Color.White)
-            .width('100%')
-            .padding(14)
-            .backgroundColor('#1d1d1f')
-            .borderRadius(8)
-          Text('Playback issues')
-            .fontSize(15)
-            .fontColor(Color.White)
-            .width('100%')
-            .padding(14)
-            .backgroundColor('#1d1d1f')
-            .borderRadius(8)
-          Text('Account security')
-            .fontSize(15)
-            .fontColor(Color.White)
-            .width('100%')
-            .padding(14)
-            .backgroundColor('#1d1d1f')
-            .borderRadius(8)
-          Text('Payment & refund')
-            .fontSize(15)
-            .fontColor(Color.White)
-            .width('100%')
-            .padding(14)
-            .backgroundColor('#1d1d1f')
-            .borderRadius(8)
-        }
-        .width('100%')
-
-        Button() {
-          Text('Contact Online Support')
+          Text('Sound Quality')
             .fontSize(16)
             .fontColor(Color.White)
+            .width('100%')
+            .padding(14)
+            .backgroundColor('#1d1d1f')
+            .borderRadius(8)
+          Text('Mobile Data Playback')
+            .fontSize(16)
+            .fontColor(Color.White)
+            .width('100%')
+            .padding(14)
+            .backgroundColor('#1d1d1f')
+            .borderRadius(8)
+          Text('Cache While Playing')
+            .fontSize(16)
+            .fontColor(Color.White)
+            .width('100%')
+            .padding(14)
+            .backgroundColor('#1d1d1f')
+            .borderRadius(8)
+          Text('Lyrics Display')
+            .fontSize(16)
+            .fontColor(Color.White)
+            .width('100%')
+            .padding(14)
+            .backgroundColor('#1d1d1f')
+            .borderRadius(8)
+
+          Text('Other')
+            .fontSize(14)
+            .fontColor('#888')
+            .margin({ top: 12 })
+
+          Text('About')
+            .fontSize(16)
+            .fontColor(Color.White)
+            .width('100%')
+            .padding(14)
+            .backgroundColor('#1d1d1f')
+            .borderRadius(8)
+          Text('Check Update')
+            .fontSize(16)
+            .fontColor(Color.White)
+            .width('100%')
+            .padding(14)
+            .backgroundColor('#1d1d1f')
+            .borderRadius(8)
+          Text('Clear Cache')
+            .fontSize(16)
+            .fontColor(Color.White)
+            .width('100%')
+            .padding(14)
+            .backgroundColor('#1d1d1f')
+            .borderRadius(8)
+          Text('Privacy Policy')
+            .fontSize(16)
+            .fontColor(Color.White)
+            .width('100%')
+            .padding(14)
+            .backgroundColor('#1d1d1f')
+            .borderRadius(8)
         }
         .width('100%')
-        .height(48)
-        .backgroundColor('#ff4a4a')
-        .borderRadius(24)
-        .margin({ top: 20 })
+        .padding({ left: 16, right: 16 })
       }
-      .width('100%')
-      .padding(16)
+      .scrollBar(BarState.Off)
       .layoutWeight(1)
     }
     .width('100%')
@@ -88,6 +103,6 @@ struct CustomerServicePage {
 }
 
 @Builder
-export function CustomerServiceBuilder(): void {
-  CustomerServicePage();
+export function SettingBuilder(): void {
+  SettingPage();
 }

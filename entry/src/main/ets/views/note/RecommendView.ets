@@ -1,7 +1,10 @@
 import { CommonConstants } from "../../constants/CommonConstants";
 import { SectionsWaterFlowDataSource } from "../../models/viewmodel/SectionsWaterFlowDataSource";
+import RecommendApi from '../../utils/api/RecommendApi';
+import { SongItem } from '../../utils/api/ApiTypes';
 
 // 文章Item组件
+@Component
 @Reusable
 struct NoteCardItem {
   @State item: number = 0;
@@ -49,6 +52,7 @@ struct RecommendView {
   @State currentItem: number = -1;
   @State minSize: number = CommonConstants.FLOW_ITEM_MIN_HEIGHT;
   @State maxSize: number = CommonConstants.FLOW_ITEM_MAX_HEIGHT;
+  @State private apiSongs: SongItem[] = [];
   scroller: Scroller = new Scroller();
   dataSource: SectionsWaterFlowDataSource = new SectionsWaterFlowDataSource();
   private itemHeightArray: number[] = [];
@@ -76,6 +80,23 @@ struct RecommendView {
     }
   };
 
+  aboutToAppear() {
+    this.loadApiData();
+    this.setItemSizeArray();
+    this.initSections();
+  }
+
+  private async loadApiData() {
+    try {
+      const result = await RecommendApi.getTopSongs(7);
+      if (result.code === 200 && result.data) {
+        this.apiSongs = result.data as SongItem[];
+      }
+    } catch (err) {
+      console.error('Note RecommendView load error:', JSON.stringify(err));
+    }
+  }
+
   // 刷新数据源和章节配置
   private refresh() {
     this.currentItem = -1;
@@ -83,9 +104,11 @@ struct RecommendView {
     setTimeout(() => {
       // 清空现有数据并添加新的随机数据
       this.dataSource.dataArray = [];
+      this.itemHeightArray = [];
       let value = Math.floor(Math.random() * CommonConstants.REFRESH_COUNT);
       for (let i = 0; i < CommonConstants.REFRESH_COUNT; i++) {
         this.dataSource.dataArray.push(i + value);
+        this.itemHeightArray.push(this.getSize());
         this.dataSource.notifyDataAdd(i);
       }
 
@@ -111,7 +134,7 @@ struct RecommendView {
         // 更新数据区域的项目数量
         this.dataSection.itemsCount += CommonConstants.LOAD_MORE_COUNT;
         // 更新sections中的数据区域
-        this.sections.update(2, this.dataSection);
+        this.sections.update(0, this.dataSection);
       }
     }, CommonConstants.LOAD_MORE_TIMEOUT);
   }
@@ -176,11 +199,6 @@ struct RecommendView {
 
     // 更新章节配置
     this.sections.update(sectionIndex, newSection);
-  }
-
-  aboutToAppear() {
-    this.setItemSizeArray();
-    this.initSections();
   }
 
   @Builder

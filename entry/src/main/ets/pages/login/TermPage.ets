@@ -38,9 +38,11 @@ struct TermPage {
         break;
     }
     // 设置 Tabs 初始选中项
-    this.tabsController.preloadItems([this.currentTabIndex]).catch(() => {
-      // TODO: Implement error handling.
-    });
+    try {
+      this.tabsController.preloadItems([this.currentTabIndex]);
+    } catch (err) {
+      console.error('TermPage preloadItems error:', JSON.stringify(err));
+    }
   }
 
   @Builder
