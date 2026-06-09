@@ -4,7 +4,7 @@ import { TabClass } from '../models/Index';
 import DrawerTab from './DrawerTab';
 import Note from './note/Note';
 import Recommend from './recommend/Recommend'
-import AudioPlayerManager from '../utils/AudioPlayerManager';
+import AudioPlayerManager from '../feature/player/AudioPlayerManager';
 
 @Entry
 @Component
@@ -115,7 +115,7 @@ struct RecommendView {
               this.getUIContext(),
               this.show,
               () => {
-                console.log('点击了播放列表');
+                console.log('play list clicked');
               });
           })
       }

@@ -5,7 +5,8 @@ import ListenFree from '../../views/recommend/ListenFree';
 import Music from '../../views/recommend/Music';
 import Podcast from '../../views/recommend/Podcast';
 import RecommendView from '../../views/recommend/RecommendView'
-import SearchApi, { HotSearchData } from '../../utils/api/SearchApi'
+import SearchApi from '../../feature/search/SearchApi'
+import { HotSearchData } from '../../feature/search/SearchApi'
 
 class TabsDateSource extends BasicDataSource<string> {
   private data: string[] = [];
@@ -45,7 +46,8 @@ struct Recommend {
   private async fetchDefaultKeyword() {
     try {
       const result = await SearchApi.hotSearch();
-      if (result.code === 200 && result.data && (result.data as HotSearchData).hots && (result.data as HotSearchData).hots.length > 0) {
+      if (result.code === 200 && result.data && (result.data as HotSearchData).hots &&
+        (result.data as HotSearchData).hots.length > 0) {
         this.keyWord = (result.data as HotSearchData).hots[0].first;
       }
     } catch (err) {
@@ -91,7 +93,7 @@ struct Recommend {
           .height(20)
           .margin({ right: 6 })
           .onClick(() => {
-            console.log('点击了')
+            console.log('item clicked');
           })
       }
       .height(38)

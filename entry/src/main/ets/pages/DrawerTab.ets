@@ -1,7 +1,7 @@
-import { CommonConstants } from '../constants/CommonConstants';
-import { UserProfile } from '../utils/api/ApiTypes';
-import UserStateManager from '../utils/UserStateManager';
-import LoginApi from '../utils/api/LoginApi';
+import { CommonConstants } from '../common/constants/CommonConstants';
+import { UserProfile } from '../common/models/ApiTypes';
+import UserStateManager from '../feature/user/UserStateManager';
+import LoginApi from '../feature/login/LoginApi';
 
 @Preview
 @Component

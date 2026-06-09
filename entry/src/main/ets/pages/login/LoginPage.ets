@@ -1,9 +1,9 @@
 import { KeyboardAvoidMode } from '@kit.ArkUI';
 import countries from '../../../assets/country_code_cn.json'
 import { BasicDataSource } from '../../utils/BasicDataSource'
-import LoginApi from '../../utils/api/LoginApi'
-import { ApiResponse } from '../../utils/api/ApiTypes'
-import UserStateManager from '../../utils/UserStateManager'
+import LoginApi from '../../feature/login/LoginApi'
+import { ApiResponse } from '../../common/models/ApiTypes'
+import UserStateManager from '../../feature/user/UserStateManager'
 
 interface CountryInfoStruct {
   cn: string;

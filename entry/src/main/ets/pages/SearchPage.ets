@@ -1,7 +1,7 @@
-import SearchApi from '../utils/api/SearchApi';
-import SongApi from '../utils/api/SongApi';
-import { SongItem } from '../utils/api/ApiTypes';
-import AudioPlayerManager from '../utils/AudioPlayerManager';
+import SearchApi from '../feature/search/SearchApi';
+import SongApi from '../feature/playlist/SongApi';
+import { SongItem } from '../common/models/ApiTypes';
+import AudioPlayerManager from '../feature/player/AudioPlayerManager';
 
 @Entry
 @Component
