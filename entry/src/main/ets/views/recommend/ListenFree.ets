@@ -1,7 +1,7 @@
 import { songs } from '../../constants/MusicConstants';
 import { songItemType } from '../../models/Music';
-import RecommendApi from '../../utils/api/RecommendApi';
-import { SongItem } from '../../utils/api/ApiTypes';
+import RecommendApi from '../../feature/recommend/RecommendApi';
+import { SongItem } from '../../common/models/ApiTypes';
 
 @Component
 struct ListenFree {

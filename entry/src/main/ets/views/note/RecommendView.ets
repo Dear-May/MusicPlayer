@@ -1,7 +1,7 @@
 import { CommonConstants } from "../../constants/CommonConstants";
 import { SectionsWaterFlowDataSource } from "../../models/viewmodel/SectionsWaterFlowDataSource";
-import RecommendApi from '../../utils/api/RecommendApi';
-import { SongItem } from '../../utils/api/ApiTypes';
+import RecommendApi from '../../feature/recommend/RecommendApi';
+import { SongItem } from '../../common/models/ApiTypes';
 
 // 文章Item组件
 @Component
@@ -21,7 +21,7 @@ struct NoteCardItem {
 
       Column() {
         Row({ space: 8 }) {
-          Image($r('app.media.ic_musicalNote'))
+          Image($r('app.media.ic_musical_note'))
             .width(16)
             .height(16)
 

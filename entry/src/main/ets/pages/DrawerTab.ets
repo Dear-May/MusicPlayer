@@ -64,7 +64,7 @@ struct DrawerTab {
       })
 
       Row() {
-        Image($r('app.media.ScanCode'))
+        Image($r('app.media.scan_code'))
           .width(25)
           .height(25)
           .onClick(() => {
@@ -83,7 +83,7 @@ struct DrawerTab {
   VipCard() {
     Column({ space: 6 }) {
       Stack() {
-        Image($r('app.media.VIPCardbg'))
+        Image($r('app.media.vip_card_bg'))
           .width(272)
           .height(95)
           .objectFit(ImageFit.Cover)
@@ -336,7 +336,7 @@ struct DrawerTab {
               .padding({ left: 16, right: 16 })
             this.menuItem($r('app.media.ic_shop_normal'), '商城', 'ShopPage')
             this.menuItem($r('app.media.ic_ticket_normal'), '云村有票', 'TicketPage')
-            this.menuItem($r('app.media.ic_PushingSongs_normal'), '云推歌', 'RecommendSongPage')
+            this.menuItem($r('app.media.ic_pushing_songs_normal'), '云推歌', 'RecommendSongPage')
             this.menuItem($r('app.media.ic_server_normal'), '我的客服', 'CustomerServicePage')
           }
           .padding({ top: 10 })

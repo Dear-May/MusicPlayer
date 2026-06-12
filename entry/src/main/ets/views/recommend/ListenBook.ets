@@ -1,7 +1,7 @@
 import { songs } from '../../constants/MusicConstants';
 import { songItemType } from '../../models/Music';
-import DjApi from '../../utils/api/DjApi';
-import { SongItem, DjRadioItem } from '../../utils/api/ApiTypes';
+import DjApi from '../../feature/recommend/DjApi';
+import { SongItem, DjRadioItem } from '../../common/models/ApiTypes';
 
 @Component
 struct ListenBook {

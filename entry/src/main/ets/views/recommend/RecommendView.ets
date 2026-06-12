@@ -3,11 +3,11 @@ import { recommendCardList, songs } from '../../constants/MusicConstants';
 import { tryCloseSideBar, navigateToPage } from '../../utils/GlobalFunction';
 import { BasicDataSource } from '../../utils/BasicDataSource';
 import { CommonConstants } from '../../constants/CommonConstants';
-import RecommendApi from '../../utils/api/RecommendApi';
-import PlaylistApi from '../../utils/api/PlaylistApi';
-import SongApi from '../../utils/api/SongApi';
-import AudioPlayerManager from '../../utils/AudioPlayerManager';
-import { BannerItem, SongItem, PlaylistItem, RecommendPlaylistItem } from '../../utils/api/ApiTypes';
+import RecommendApi from '../../feature/recommend/RecommendApi';
+import PlaylistApi from '../../feature/playlist/PlaylistApi';
+import SongApi from '../../feature/playlist/SongApi';
+import AudioPlayerManager from '../../feature/player/AudioPlayerManager';
+import { BannerItem, SongItem, PlaylistItem, RecommendPlaylistItem } from '../../common/models/ApiTypes';
 
 class RecommendCardDateSource extends BasicDataSource<recommendCardType> {
   private data: recommendCardType[] = [];

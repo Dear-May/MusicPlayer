@@ -88,7 +88,7 @@ struct Recommend {
           navigateToSearch(this.getUIContext(), this.show);
         })
 
-        Image($r('app.media.ScanCode'))
+        Image($r('app.media.scan_code'))
           .width(20)
           .height(20)
           .margin({ right: 6 })

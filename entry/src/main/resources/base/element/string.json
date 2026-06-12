@@ -1,20 +1,39 @@
 {
-  "string": [
-    {
-      "name": "module_desc",
-      "value": "Music player module"
-    },
-    {
-      "name": "EntryAbility_desc",
-      "value": "Music playback and recommendation"
-    },
-    {
-      "name": "EntryAbility_label",
-      "value": "网易云音乐"
-    },
-    {
-      "name": "page_show",
-      "value": "page_show"
-    }
-  ]
+  "string" : [ {
+    "name" : "module_desc",
+    "value" : "Music player module"
+  }, {
+    "name" : "EntryAbility_desc",
+    "value" : "Music playback and recommendation"
+  }, {
+    "name" : "EntryAbility_label",
+    "value" : "网易云音乐"
+  }, {
+    "name" : "defaultForm_label",
+    "value" : "form_label"
+  }, {
+    "name" : "defaultForm_desc",
+    "value" : "form_description"
+  }, {
+    "name" : "EntryFormAbility_desc",
+    "value" : "form_description"
+  }, {
+    "name" : "EntryFormAbility_label",
+    "value" : "form_label"
+  }, {
+    "name" : "widget_desc",
+    "value" : "This is a service widget."
+  }, {
+    "name" : "widget_display_name",
+    "value" : "widget"
+  }, {
+    "name" : "widget1_desc",
+    "value" : "This is a service widget."
+  }, {
+    "name" : "widget1_display_name",
+    "value" : "widget1"
+  }, {
+    "name" : "page_show",
+    "value" : "page_show"
+  } ]
 }

@@ -1,9 +1,9 @@
 import { songs } from '../../constants/MusicConstants';
 import { songItemType } from '../../models/Music';
-import RecommendApi from '../../utils/api/RecommendApi';
-import SongApi from '../../utils/api/SongApi';
-import { SongItem } from '../../utils/api/ApiTypes';
-import AudioPlayerManager from '../../utils/AudioPlayerManager';
+import RecommendApi from '../../feature/recommend/RecommendApi';
+import SongApi from '../../feature/playlist/SongApi';
+import { SongItem } from '../../common/models/ApiTypes';
+import AudioPlayerManager from '../../feature/player/AudioPlayerManager';
 
 @Component
 struct Music {

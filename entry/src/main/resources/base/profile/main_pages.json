@@ -1,22 +1,3 @@
 {
-  "src": [
-    "pages/login/WelcomePage",
-    "pages/login/LoginPage",
-    "pages/login/TermPage",
-    "pages/Index",
-    "pages/SearchPage",
-    "pages/other/AccountRecoveryPage",
-    "pages/other/CustomerServicePage",
-    "pages/other/MessagePage",
-    "pages/other/YunbeiPage",
-    "pages/other/ClothingPage",
-    "pages/other/CreatePage",
-    "pages/other/RecentlyPlayPage",
-    "pages/other/TimedShutdownPage",
-    "pages/other/ShopPage",
-    "pages/other/TicketPage",
-    "pages/other/RecommendSongPage",
-    "pages/other/SettingPage",
-    "pages/other/MorePage"
-  ]
+  "src" : [ "pages/login/WelcomePage", "pages/login/LoginPage", "pages/login/TermPage", "pages/Index", "pages/SearchPage", "pages/other/AccountRecoveryPage", "pages/other/CustomerServicePage", "pages/other/MessagePage", "pages/other/YunbeiPage", "pages/other/ClothingPage", "pages/other/CreatePage", "pages/other/RecentlyPlayPage", "pages/other/TimedShutdownPage", "pages/other/ShopPage", "pages/other/TicketPage", "pages/other/RecommendSongPage", "pages/other/SettingPage", "pages/other/MorePage" ]
 }

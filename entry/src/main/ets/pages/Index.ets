@@ -5,6 +5,7 @@ import DrawerTab from './DrawerTab';
 import Note from './note/Note';
 import Recommend from './recommend/Recommend'
 import AudioPlayerManager from '../feature/player/AudioPlayerManager';
+import Mine from './mine/Mine';
 
 @Entry
 @Component
@@ -185,7 +186,7 @@ struct RecommendView {
                 } else if (item.name === 'note') {
                   Note()
                 } else if (item.name === 'mine') {
-                  // Mine({ playState: $playState })
+                  Mine()
                 } else {
                   // Like()
                 }

@@ -110,9 +110,12 @@ export interface RecommendPlaylistResult {
 
 export interface RecommendPlaylistItem {
   id: number;
+  type?: number;
   name: string;
+  copywriter?: string;
   picUrl: string;
   playCount: number;
+  trackCount?: number;
 }
 
 export interface BannerResult {

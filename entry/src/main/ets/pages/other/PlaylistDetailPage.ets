@@ -16,12 +16,12 @@ struct PlaylistDetailPage {
   aboutToAppear(): void {
     const params = this.getUIContext().getRouter().getParams();
     if (params) {
-      const id = Reflect.get(params, 'playlistId');
-      const name = Reflect.get(params, 'playlistName');
-      const cover = Reflect.get(params, 'coverImg');
-      if (id !== undefined) this.playlistId = id as number;
-      if (name !== undefined) this.playlistName = name as string;
-      if (cover !== undefined) this.coverImg = cover as string;
+      const id: Object = Reflect.get(params, 'playlistId');
+      const name: Object = Reflect.get(params, 'playlistName');
+      const cover: Object = Reflect.get(params, 'coverImg');
+      if (typeof id === 'number') this.playlistId = id;
+      if (typeof name === 'string') this.playlistName = name;
+      if (typeof cover === 'string') this.coverImg = cover;
     }
     this.loadPlaylistTracks();
   }
@@ -35,7 +35,7 @@ struct PlaylistDetailPage {
         this.coverImg = this.coverImg || result.playlist.coverImgUrl;
         this.playlistName = this.playlistName || result.playlist.name;
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('PlaylistDetailPage load error:', JSON.stringify(err));
     } finally {
       this.isLoading = false;
@@ -52,7 +52,7 @@ struct PlaylistDetailPage {
           await this.audioManager.initPlayer(songUrl, song.name, artistNames, song.album?.picUrl || '');
         }
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('PlaylistDetailPage play error:', JSON.stringify(err));
     }
   }
