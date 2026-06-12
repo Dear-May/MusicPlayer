@@ -10,3 +10,15 @@
 /.clang-tidy
 **/.test
 /.appanalyzer
+
+# cross-platform build artifacts
+.arkui-x/
+
+# AI tooling
+.codegraph/
+.knowledge-base/
+AGENTS.md
+ragConfig.json
+
+# IDE
+.vscode/
