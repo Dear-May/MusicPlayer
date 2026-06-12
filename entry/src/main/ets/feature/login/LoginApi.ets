@@ -31,6 +31,16 @@ export default class LoginApi {
     return await http.get<LoginResult>('/login/cellphone', params);
   }
 
+  static async loginByCaptcha(phone: string, captcha: string, countrycode: string = '86'): Promise<LoginResult> {
+    interface CaptchaLoginParams {
+      phone: string;
+      captcha: string;
+      countrycode: string;
+    }
+    const params: CaptchaLoginParams = { phone: phone, captcha: captcha, countrycode: countrycode };
+    return await http.get<LoginResult>('/login/cellphone', params);
+  }
+
   static async loginByEmail(email: string, password: string): Promise<LoginResult> {
     interface EmailLoginParams {
       email: string;

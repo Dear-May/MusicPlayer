@@ -2,7 +2,10 @@ import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import SongManager from '../utils/SongManager';
-import UserStateManager from '../utils/UserStateManager';
+import UserStateManager from '../feature/user/UserStateManager';
+import LoginApi from '../feature/login/LoginApi';
+import HttpManager from '../common/network/HttpManager';
+import { UserProfile } from '../common/models/ApiTypes';
 
 const DOMAIN = 0x0000;
 
@@ -13,6 +16,26 @@ export default class EntryAbility extends UIAbility {
     SongManager.context = this.context;
     // 恢复登录状态（Cookie和用户信息）
     UserStateManager.restoreLogin(this.context);
+    // 异步校验session有效性
+    EntryAbility.validateSession();
+  }
+
+  static async validateSession(): Promise<void> {
+    const http: HttpManager = HttpManager.getInstance();
+    if (!http.hasLogin()) {
+      return;
+    }
+    try {
+      const status = await LoginApi.getLoginStatus();
+      if (status.code !== 200) {
+        http.clearCookie();
+        AppStorage.setOrCreate<boolean>('isLoggedIn', false);
+        AppStorage.setOrCreate<UserProfile | null>('userInfo', null);
+        console.info('EntryAbility: session expired, cleared login state');
+      }
+    } catch (_err) {
+      console.warn('EntryAbility: session check failed, keeping cached state');
+    }
   }
 
   onDestroy(): void {
@@ -38,12 +61,12 @@ export default class EntryAbility extends UIAbility {
   }
 
   onForeground(): void {
-    // Ability has brought to foreground
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onForeground');
+    // 从后台恢复时刷新登录态
+    EntryAbility.validateSession();
   }
 
   onBackground(): void {
-    // Ability has back to background
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onBackground');
   }
 }

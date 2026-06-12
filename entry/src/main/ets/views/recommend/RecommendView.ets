@@ -89,7 +89,12 @@ struct CardItem {
               .fontSize(8)
               .fontColor($r('sys.color.white'))
               .backgroundColor('#33333380')
-              .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+              .padding({
+                left: 6,
+                right: 6,
+                top: 2,
+                bottom: 2
+              })
               .borderRadius(4)
           }
           Blank()
@@ -125,7 +130,12 @@ struct CardItem {
             .fontSize(12)
             .fontColor($r('sys.color.white'))
         }
-        .padding({ top: 12, left: 6, right: 6, bottom: 12 })
+        .padding({
+          top: 12,
+          left: 6,
+          right: 6,
+          bottom: 12
+        })
         .backgroundColor('#1d1d1f')
         .width(120)
         .height(40)
@@ -189,7 +199,6 @@ struct RecommendView {
   @State loadedBlockIndex: number = 0;
   @State private recommendCardDataSource: RecommendCardDateSource = new RecommendCardDateSource(recommendCardList);
   @State private songDataSource: SongDataSource = new SongDataSource(this.chunkSongs(songs, 3));
-
   // API 数据
   @State private banners: BannerItem[] = [];
   @State private personalizedPlaylists: RecommendPlaylistItem[] = [];
@@ -376,7 +385,7 @@ struct RecommendView {
   @Builder
   songCardList() {
     Scroll() {
-      Row() {
+      Row({ space: 12 }) {
         if (this.topSongs.length > 0) {
           // 使用API新歌列表
           ForEach(this.topSongs.slice(0, 6), (song: SongItem) => {
@@ -414,6 +423,7 @@ struct RecommendView {
           })
         }
       }
+      .padding({ left: 16 })
     }
     .scrollable(ScrollDirection.Horizontal)
     .scrollBar(BarState.Off)
@@ -428,7 +438,12 @@ struct RecommendView {
         .fontWeight(FontWeight.Bold)
     }
     .width('100%')
-    .padding({ left: '23vp', right: 16, top: 12, bottom: 6 })
+    .padding({
+      left: '23vp',
+      right: 16,
+      top: 12,
+      bottom: 6
+    })
   }
 
   @Builder
@@ -459,7 +474,13 @@ struct RecommendView {
             .fontWeight(FontWeight.Bold)
         }
         .width('100%')
-        .padding({ left: '23vp', right: 16, top: 12, bottom: 6 })
+        .padding({
+          left: '23vp',
+          right: 16,
+          top: 12,
+          bottom: 6
+        })
+
         this.songCardList();
       }
     } else if (block.type === 'songTag') {
@@ -473,12 +494,23 @@ struct RecommendView {
             .fontSize(12)
             .fontColor('#d8a0a0')
             .backgroundColor('#332222')
-            .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+            .padding({
+              left: 6,
+              right: 6,
+              top: 2,
+              bottom: 2
+            })
             .borderRadius(4)
             .margin({ left: 8 })
         }
         .width('100%')
-        .padding({ left: '23vp', right: 16, top: 12, bottom: 6 })
+        .padding({
+          left: '23vp',
+          right: 16,
+          top: 12,
+          bottom: 6
+        })
+
         this.songCardList();
       }
     }
@@ -519,7 +551,12 @@ struct RecommendView {
             .interval(4000)
             .indicator(true)
             .width('100%')
-            .padding({ left: 16, right: 16, top: 8, bottom: 4 })
+            .padding({
+              left: 16,
+              right: 16,
+              top: 8,
+              bottom: 4
+            })
           }
 
           // 每日推荐数据（需登录）
@@ -533,12 +570,23 @@ struct RecommendView {
                 .fontSize(12)
                 .fontColor('#d8a0a0')
                 .backgroundColor('#332222')
-                .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+                .padding({
+                  left: 6,
+                  right: 6,
+                  top: 2,
+                  bottom: 2
+                })
                 .borderRadius(4)
                 .margin({ left: 8 })
             }
             .width('100%')
-            .padding({ left: '23vp', right: 16, top: 12, bottom: 6 })
+            .padding({
+              left: '23vp',
+              right: 16,
+              top: 12,
+              bottom: 6
+            })
+
             this.songCardList();
           }
 
@@ -554,12 +602,23 @@ struct RecommendView {
                 .fontSize(12)
                 .fontColor('#d8a0a0')
                 .backgroundColor('#332222')
-                .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+                .padding({
+                  left: 6,
+                  right: 6,
+                  top: 2,
+                  bottom: 2
+                })
                 .borderRadius(4)
                 .margin({ left: 8 })
             }
             .width('100%')
-            .padding({ left: '23vp', right: 16, top: 12, bottom: 6 })
+            .padding({
+              left: '23vp',
+              right: 16,
+              top: 12,
+              bottom: 6
+            })
+
             this.songCardList();
           }
 

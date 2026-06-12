@@ -4,6 +4,7 @@
  * Uses AppStorage for cross-component login state sharing
  */
 import HttpManager from '../../common/network/HttpManager';
+import LoginApi from '../../feature/login/LoginApi';
 import { UserProfile } from '../../common/models/ApiTypes';
 import { preferences } from '@kit.ArkData';
 
@@ -88,6 +89,19 @@ export default class UserStateManager {
     } catch (err) {
       console.error('UserStateManager clearStorage error:', JSON.stringify(err));
     }
+  }
+
+  static async tryRefreshLogin(): Promise<boolean> {
+    try {
+      const result = await LoginApi.refreshLogin();
+      if (result.code === 200) {
+        console.info('UserStateManager: session refreshed');
+        return true;
+      }
+    } catch (err) {
+      console.warn('UserStateManager: session refresh failed', JSON.stringify(err));
+    }
+    return false;
   }
 
   static isLoggedIn(): boolean {

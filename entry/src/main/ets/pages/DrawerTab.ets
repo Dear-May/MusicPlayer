@@ -68,7 +68,7 @@ struct DrawerTab {
           .width(25)
           .height(25)
           .onClick(() => {
-            console.log('点击了')
+            console.log('DrawerTab: scan QR - coming soon')
           })
       }
       .justifyContent(FlexAlign.End)
@@ -218,49 +218,84 @@ struct DrawerTab {
     })
   }
 
+  private async handleLogout() {
+    try {
+      await LoginApi.logout();
+    } catch (_err) {
+      console.warn('DrawerTab: logout API call failed, clearing local state');
+    }
+    try {
+      const ctx: Context = this.getUIContext().getHostContext()?.getApplicationContext() as Context;
+      if (ctx) {
+        await UserStateManager.onLogout(ctx);
+      }
+    } catch (err) {
+      console.error('DrawerTab: logout error', JSON.stringify(err));
+    }
+  }
+
   // 底部按钮栏
   @Builder
   BottomBar() {
-    Row({ space: 20 }) {
-      Button() {
-        Row() {
-          Image($r('app.media.ic_setting'))
-            .width(20)
-            .height(20)
-          Text('设置')
-            .fontSize(14)
-            .fontColor(Color.White)
+    Column() {
+      Row({ space: 20 }) {
+        Button() {
+          Row() {
+            Image($r('app.media.ic_setting'))
+              .width(20)
+              .height(20)
+            Text('设置')
+              .fontSize(14)
+              .fontColor(Color.White)
+          }
         }
-      }
-      .layoutWeight(1)
-      .backgroundColor('#2c2b2f')
-      .borderRadius(4)
-      .padding(8)
-      .onClick(() => {
-        this.RouterPage('pages/other/SettingPage')
-      })
+        .layoutWeight(1)
+        .backgroundColor('#2c2b2f')
+        .borderRadius(4)
+        .padding(8)
+        .onClick(() => {
+          this.RouterPage('pages/other/SettingPage')
+        })
 
-      Button() {
-        Row() {
-          Image($r('app.media.ic_more'))
-            .width(20)
-            .height(20)
-          Text('更多')
-            .fontSize(14)
-            .fontColor(Color.White)
+        Button() {
+          Row() {
+            Image($r('app.media.ic_more'))
+              .width(20)
+              .height(20)
+            Text('更多')
+              .fontSize(14)
+              .fontColor(Color.White)
+          }
         }
+        .layoutWeight(1)
+        .backgroundColor('#2c2b2f')
+        .borderRadius(4)
+        .padding(8)
+        .onClick(() => {
+          this.RouterPage('pages/other/MorePage')
+        })
       }
-      .layoutWeight(1)
-      .backgroundColor('#2c2b2f')
-      .borderRadius(4)
-      .padding(8)
-      .onClick(() => {
-        this.RouterPage('pages/other/MorePage')
-      })
+      .justifyContent(FlexAlign.Start)
+      .width('100%')
+
+      if (this.isLoggedIn) {
+        Button() {
+          Text('退出登录')
+            .fontSize(14)
+            .fontColor('#999')
+        }
+        .width('100%')
+        .backgroundColor('#2c2b2f')
+        .borderRadius(4)
+        .padding(8)
+        .margin({ top: 8 })
+        .onClick(() => {
+          this.handleLogout();
+        })
+      }
     }
-    .justifyContent(FlexAlign.Start)
     .width('100%')
-    .height('13%')
+    .height('16%')
     .padding({
       bottom: 16,
       top: 12

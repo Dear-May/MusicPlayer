@@ -132,7 +132,7 @@ export default class HttpManager {
           console.warn('HttpManager GET retry ' + url + ' attempt ' + (attempt + 1));
           continue;
         }
-        console.error('HttpManager GET ' + url + ' error:', JSON.stringify(err));
+        console.error('HttpManager GET ' + url + ' error');
         throw (err instanceof Error ? err : new Error(String(err)));
       }
     }
